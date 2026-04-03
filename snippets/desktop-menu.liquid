@@ -1,0 +1,496 @@
+{%- liquid
+  unless limit
+    assign limit = menu.links.size
+  endunless
+  unless offset
+    assign offset = 0
+  endunless
+-%}
+
+<style>
+  .custom-menu {
+    display:flex!important;
+    
+  }
+  .custom-drop > li {
+
+    width:30%;
+  }
+   {
+
+
+  
+  }
+  .sub-menu-b > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0!important;
+
+        list-style: none!important;
+}
+  .sub-menu-b > ul > li > a {
+  text-decoration: none;
+  color: #ffffff;
+    list-style:none !important;
+      padding: 0!important;
+}
+  .sub-ul {
+    display:flex;
+  }
+
+  .sub-li {
+    width:30%;
+  }
+
+.sub-menu-b {
+display:none;
+padding-bottom:60px;
+  background-color: rgb(var(--color-header-background));
+	transition: 1.0s ;
+
+
+}
+  .main-menu-b {
+    transition: 1.0s ;
+  }
+.main-menu-b:hover .sub-menu-b {
+  display:flex!important;  
+     flex-wrap        : wrap;
+    justify-content: center;
+    padding:20px 5px 20px 5px;
+
+  
+}
+ .sub-menu-b:hover  {
+    display:flex!important;  
+     flex-wrap        : wrap;
+    justify-content: center;
+    padding:20px 5px 20px 5px;
+ opacity:1.0;
+}
+
+  .sub-menu-line > a {
+ width:100% !important;
+    justify-content :left;
+    padding-left: 40px;
+    font-size:12px !important;
+  }
+  .header__menu-item--top {
+   
+  }
+
+  
+  .video-wrap > video {
+    width:100%;
+  }
+@media screen and (max-width:1200px) {
+ .video-wrap > video {
+     width: 100%;
+  
+ }
+}
+
+.label ddSP{
+    font-weight: bold;
+}
+
+  .sub-menu-line {
+  width:22%;
+    max-width:250px;
+  }
+  .sub-menu-line > h3 {
+        width: 100% !important;
+    text-align:left;: left;
+    padding-left: 40px;
+    font-size: 24px !important;
+    margin-top:0!important;
+  }
+  .sub-menu-line-a-e {
+display:none;
+  }
+
+
+</style>
+
+<nav class="header__inline-menu{% if offset > 0 %} header__inline-menu-split{% endif %}">
+  <ul class="list-menu list-menu--inline" role="list">
+         <li>
+       <menu-dropdown class="main-menu-b">
+               <a href="#" class="header__menu-item header__menu-item--top list-menu__item focus-inset "　disable="disabled"> 
+                  <span class="label">SELECT</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" role="presentation" class="icon icon-caret" fill="none" viewBox="0 0 24 15">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 15c-.3 0-.6-.1-.8-.4l-11-13C-.2 1.2-.1.5.3.2c.4-.4 1.1-.3 1.4.1L12 12.5 22.2.4c.4-.4 1-.5 1.4-.1.4.4.5 1 .1 1.4l-11 13c-.1.2-.4.3-.7.3z" fill="currentColor"></path>
+    </svg>
+
+        <div class="sub-menu-b" style="width:100vw; position:absolute; left:0; ">
+          <div class="sub-menu-line sub-menu-line-a-e">
+            <h3 style="font-size:22px;">A - E</h3>
+             <a href="/collections/a-p-c" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">A.P.C.</span>
+                        </a>
+          <a href="/collections/apotheke-fragrance" class="header__menu-item list-menu__item focus-inset" style="">
+                          <span class="label">APOTHEKE FRAGRANCE</span>
+                        </a>
+          </div>
+               <div class="sub-menu-three" style="margin-top:150px;">
+                      <a href="/collections/used-1" class="header__menu-item list-menu__item focus-inset" style="display:block; font-weight:bold; font-size:13px;">
+                          <span class="label">USED</span>
+                        </a>     
+        　<a href="/collections/maisonmamaniere" class="header__menu-item list-menu__item focus-inset" style="display:block; font-weight:bold; font-size:13px;">
+                          <span class="label">ORIGINAL</span>
+                        </a>
+          <a href="/collections/military-work" class="header__menu-item list-menu__item focus-inset" style="display:block; font-weight:bold; margin-top:30px; font-size:13px;">
+                          <span class="label">WORK&MILITARY</span>
+                        </a>
+          </div>
+            <div class="sub-menu-line ">
+            <h3 style="font-size:22px;">A - F</h3>
+              <a href="/collections/akiranaka" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">AKIRANAKA</span>
+                        </a>
+          <a href="/collections/ahlem" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">AHLEM</span>
+                        </a>  
+          <a href="/collections/amomento" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">AMOMENTO</span>
+                        </a>    
+          <a href="/collections/ancellm" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">ANCELLM</span>
+                        </a>     
+        　<a href="/collections/a-p-c" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">A.P.C.</span>
+                        </a>
+          <a href="/collections/apotheke-fragrance" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">APOTHEKE FRAGRANCE</span>
+                        </a>
+       <!--   <a href="/collections/astier-de-villatte" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">ASTIER de VILLATTE</span>
+                        </a> 
+      -->
+          <a href="/collections/automilles" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">automills</span>
+                        </a>
+          <a href="/collections/austin-austin" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Austin Austin</span>
+                        </a>
+     <!--     <a href="/collections/basis-broek" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">BASIS BROEK</span>
+                        </a>
+    -->
+          <a href="/collections/beautiful-shoes" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">BEAUTIFUL SHOES</span>
+                        </a>
+          <a href="/collections/bodhi" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">BODHI</span>
+                        </a>
+          <a href="/collections/cfcl" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">CFCL</span>
+                        </a>
+     <!--     <a href="/collections/evcon" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">EVCON</span>
+                        </a>
+    -->
+               <a href="/collections/fill-the-bill" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">FILL THE BILL</span>
+                        </a>
+          <a href="/collections/foot-the-coacher" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">foot the coacher</span>
+                        </a>
+          <a href="/collections/freshservice" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">FRESHSERVICE</span>
+                        </a>
+          </div>
+          <div class="sub-menu-line">
+            <h3 style="font-size:22px;">H - L</h3>
+          <a href="/collections/handmade-candle-lifart" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Handmade candle lifart</span>
+                        </a>
+     <!--     <a href="/collections/hetkinen" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">HETKINEN</span>
+                        </a>
+    -->
+           <a href="/collections/hum-vent" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">HUM VENT</span>
+                        </a>
+     <!--     <a href="/collections/jakke" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">jakke</span>
+                        </a>
+    -->
+            <a href="/collections/kanako-sakai" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">KANAKO SAKAI</span>
+                        </a>
+          <a href="/collections/kearny" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">kearny</span>
+                        </a>
+             <a href="/collections/kijimatakayuki" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">KIJIMATAKAYUKI</span>
+                        </a>  
+          <a href="/collections/kleman" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">KLEMAN</span>
+                        </a>
+     <!--       <a href="/collections/lantern" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">LANTERN</span>
+                        </a>
+    -->
+    <!--      <a href="/collections/le-sans-pareil" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Le Sans Pareil</span>
+                        </a>
+    -->
+          <a href="/collections/lesca-lunetier" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Lesca LUNETIER</span>
+                        </a>
+    <!--      <a href="/collections/loomer" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">loomer</span>
+                        </a>
+    -->
+          </div>
+          <div class="sub-menu-line">
+            <h3 style="font-size:22px;">M - R</h3>
+      <!--    <a href="/collections/maisonmamaniere" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Maison ma Maniére</span>
+                        </a> --->
+          <a href="/collections/marvis" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">MARVIS</span>
+                        </a>
+          <a href="/collections/moonstar" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">MOONSTAR</span>
+                        </a>
+          <a href="/collections/moonstar-810s" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">MOONSTAR 810S</span>
+                        </a>
+          <a href="/collections/my-1" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">MY___</span>
+                        </a>
+         <a href="/collections/neat" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">NEAT</span>
+                        </a> 
+      <!--     <a href="/collections/nochino-optical" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">NOCHINO OPTICAL</span>
+                        </a> 
+      -->
+          <a href="/collections/niche" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">macmahon knitting mills by Niche.</span>
+                        </a>
+       <!--   <a href="/collections/novem" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">NOVEM</span>
+                        </a>
+      -->
+     <!--     <a href="/collections/ordinary-fits" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">ORDINARY FITS</span>
+                        </a>
+    -->
+          <a href="/collections/o-skin-hair" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">O Skin&Hair</span>
+                        </a>
+          <a href="/collections/outil" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">OUTIL</span>
+                        </a>  
+             <a href="/collections/polyploid" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">POLYPLOID</span>
+                        </a>  
+     <!--       <a href="/collections/provoke" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">PROVOKE</span>
+                        </a>
+      -->
+       <!--      <a href="/collections/pom" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">POM</span>
+                        </a>
+        -->
+          </div>
+           <div class="sub-menu-line">
+            <h3 style="font-size:22px;">S - Z</h3>
+          <a href="/collections/saby" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">saby</span>
+                        </a>
+          <a href="/collections/sara-mallika" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Sara mallika</span>
+                        </a>
+       <!--    <a href="/collections/sandwaterr" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Sandwaterr</span>
+                        </a>
+        -->
+     <!--     <a href="/collections/sreu" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">SREU</span>
+                        </a>
+      -->
+             <a href="/collections/soduk" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">soduk</span>
+                        </a>
+           <a href="/collections/subtle-bodies" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">Subtle Bodies</span>
+                        </a>
+              <a href="/collections/ten" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">TEN</span>
+                        </a>  
+          <a href="/collections/the-role-design" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">The Role design</span>
+                        </a>
+     <!--     <a href="/collections/tokyo-kodo" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">TOKYO KODO</span>
+                        </a>
+      -->
+          <a href="/collections/universal-products" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">UNIVERSAL PRODUCTS</span>
+                                        </a>
+          <a href="/collections/yashiki" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">YASHIKI</span>
+                                        </a>
+          <a href="/collections/yumiko-iihoshi-porcerain" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">yumiko iihoshi porcerain</span>
+                                        </a>
+          <a href="/collections/%E9%A6%AC%E5%A0%B4%E5%8B%9D%E6%96%87" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">馬場勝文&nbsp;</span>
+                        </a>
+          <a href="/collections/%E9%88%B4%E6%9C%A8%E7%92%B0" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label">鈴木環&nbsp;</span>
+                        </a>
+      <!--    <a href="/collections/used-1" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label ddSP">USED</span>
+                        </a>
+          <a href="/collections/vintage-1" class="header__menu-item list-menu__item focus-inset">
+                          <span class="label ddSP">VINTAGE & ANTIQUE</span>
+                        </a>  -->
+           </div>
+          
+        
+      </div>
+                </a>
+       
+              </menu-dropdown>
+      </li>
+    {%- for link in menu.links limit: limit offset: offset -%}
+      {%- liquid
+        assign enable_mega_menu = false
+        if enable_dropdown_menu
+          assign link_title_handle = link.title | handle
+
+          for block in blocks
+            assign menu_title_handle = block.settings.menu_title | handle
+            if menu_title_handle == link_title_handle
+              assign enable_mega_menu = true
+              assign mega_menu_block = block
+              break
+            endif
+          endfor
+        endif
+      -%}
+ 
+      <li>
+        {%- if link.links != blank -%}
+          {%- if enable_dropdown_menu -%}
+            {%- if enable_mega_menu -%}
+              {% render 'mega-menu', link: link, block: mega_menu_block %}
+            {%- else -%}
+              <menu-dropdown>
+                <a href="{{ link.url }}" class="header__menu-item{%- if link.child_active %} header__active-menu-item{% endif %} header__menu-item--top list-menu__item focus-inset">
+                  <span class="label">{{ link.title | escape }}</span>
+                  {% render 'icon', icon: 'caret' %}
+                </a>
+                <ul class="list-menu-dropdown list-menu hidden" role="list" tabindex="-1">
+                  {%- for childlink in link.links -%}
+                    <li>
+                      {%- if childlink.links == blank -%}
+                        <a href="{{ childlink.url }}" class="header__menu-item list-menu__item focus-inset{% if childlink.current %} list-menu__item--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
+                          <span class="label">{{ childlink.title | escape }}</span>
+                        </a>
+                      {%- else -%}
+                        <menu-dropdown>
+                          <a href="{{ childlink.url }}" class="header__menu-item{%- if childlink.child_active %} header__active-menu-item{% endif %} list-menu__item focus-inset">
+                            <span class="label">{{ childlink.title | escape }}</span>
+                            {% render 'icon', icon: 'caret' %}
+                          </a>
+                          <ul class="list-menu-dropdown list-menu hidden">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li>
+                                <a href="{{ grandchildlink.url }}" class="header__menu-item list-menu__item focus-inset{% if grandchildlink.current %} list-menu__item--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
+                                  <span class="label">{{ grandchildlink.title | escape }}</span>
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        </details>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </menu-dropdown>
+            {%- endif -%}
+          {%- else -%}
+            <menu-drawer>
+              <details>
+                <summary class="header__menu-item{%- if link.child_active %} header__active-menu-item{% endif %} header__menu-item--top list-menu__item focus-inset">
+                  <span class="label">{{ link.title | escape }}</span>
+                  {% render 'icon', icon: 'caret' %}
+                </summary>
+                <div class="list-menu-drawer motion-reduce">
+                  <ul class="header__submenu list-menu list-menu--disclosure" role="list" tabindex="-1">
+                    {%- for childlink in link.links -%}
+                      <li data-animate data-animate-delay-{{ forloop.index }}>
+                        {%- if childlink.links == blank -%}
+                          {%- if childlink.type == 'collection_link' -%}
+                            <list-menu-item data-title="{{ childlink.title | escape }}" data-url="{{ childlink.url }}" data-image="{% if childlink.object.image %}{{ childlink.object.image | image_url: width: 460 }}{% endif %}" data-description="{{ childlink.object.description | strip_html | truncatewords: 30 }}">
+                          {%- endif -%}
+                              <a href="{{ childlink.url }}" class="header__menu-item list-menu__item focus-inset{% if childlink.current %} list-menu__item--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
+                                <span class="label">{{ childlink.title | escape }}</span>
+                              </a>
+                          {%- if childlink.type == 'collection_link' -%}
+                            </list-menu-item>
+                          {%- endif -%}
+                        {%- else -%}
+                          <details>
+                            <summary>
+                              {%- if childlink.type == 'collection_link' -%}
+                                <list-menu-item data-title="{{ childlink.title | escape }}" data-url="{{ childlink.url }}" data-image="{% if childlink.object.image %}{{ childlink.object.image | image_url: width: 460 }}{% endif %}" data-description="{{ childlink.object.description | strip_html | truncatewords: 30 }}">
+                              {%- endif -%}
+                                  <div class="header__menu-item{%- if childlink.child_active %} header__active-menu-item{% endif %} list-menu__item focus-inset">
+                                    <span class="label">{{ childlink.title | escape }}</span>
+                                    {% render 'icon', icon: 'caret' %}
+                                  </div>
+                              {%- if childlink.type == 'collection_link' -%}
+                                </list-menu-item>
+                              {%- endif -%}
+                            </summary>
+                            <ul class="header__submenu list-menu list-chilmenu--disclosure motion-reduce">
+                              {%- for grandchildlink in childlink.links -%}
+                                <li>
+                                  {%- if grandchildlink.type == 'collection_link' -%}
+                                    <list-menu-item data-title="{{ grandchildlink.title | escape }}" data-url="{{ grandchildlink.url }}" data-image="{% if grandchildlink.object.image %}{{ grandchildlink.object.image | image_url: width: 460 }}{% endif %}" data-description="{{ grandchildlink.object.description | strip_html | truncatewords: 30 }}">
+                                  {%- endif -%}
+                                      <a href="{{ grandchildlink.url }}" class="header__menu-item list-menu__item focus-inset{% if grandchildlink.current %} list-menu__item--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
+                                        <span class="label">{{ grandchildlink.title | escape }}</span>
+                                      </a>
+                                  {%- if grandchildlink.type == 'collection_link' -%}
+                                    </list-menu-item>
+                                  {%- endif -%}
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          </details>
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                  <list-menu-hover class="list-menu__hover"></list-menu-hover>
+                </div>
+              </details>
+            </menu-drawer>
+          {%- endif -%}
+        {%- else -%}
+          {%- if enable_mega_menu -%}
+            {% render 'mega-menu', link: link, block: mega_menu_block %}
+          {%- else -%}
+            <a href="{{ link.url }}" class="header__menu-item{%- if link.current %} header__active-menu-item{% endif %} header__menu-item--top list-menu__item focus-inset"{% if link.current %} aria-current="page"{% endif %}>
+              <span class="label">{{ link.title | escape }}</span>
+            </a>
+          {%- endif -%}
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>
+
+<script>
+
+
+  
+</script>

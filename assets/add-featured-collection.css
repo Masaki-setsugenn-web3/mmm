@@ -1,0 +1,33 @@
+/*.price {
+  text-align: right !important;
+  font-size:6px !important;
+}
+*/
+     .section-template--16334554071261__1661445529a924cd37-padding > .view-all  {
+  text-align: right !important;
+}
+
+.buttonand-more {
+  text-decoration: none !important;
+  color: #838282!important;
+  position:relative;
+}
+
+.buttonand-more::after {
+  content: '';
+  width: 100px;
+  height: 1px;
+  display: inline-block;
+  background-color: #838282;
+  position: absolute;
+  bottom: -10px;
+ right:0;
+  left:20px;
+}
+
+.full-unstyled-link {
+  color: #838282 !important;
+}
+
+
+

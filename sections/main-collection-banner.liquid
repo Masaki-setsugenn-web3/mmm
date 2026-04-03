@@ -1,0 +1,465 @@
+{% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --image-position: {{ section.settings.image_position }};
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: calc({{ section.settings.padding_top }}px * 0.75);
+    padding-bottom: calc({{ section.settings.padding_bottom }}px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+
+<div class="collection-hero{% if section.settings.show_image and collection.image %} collection-hero--with-image{% if section.settings.apply_overlay %} collection-hero--contrast{% endif %}{% endif %}{% if section.settings.show_text_below %} collection-hero--mobile-bottom{% endif %} section-{{ section.id }}-padding">
+  <div class="collection-hero__inner">
+    {%- if section.settings.show_image and collection.image -%}
+      <div class="collection-hero__image-container">
+        <use-animate data-animate="zoom-fade" class="media-wrapper">
+          <lazy-image class="collection-hero__image image-animate media media--{{ section.settings.image_ratio }} media-mobile--{{ section.settings.mobile_image_ratio }}"
+            {%- if section.settings.image_ratio == 'adapt' %} style="--image-ratio-percent: {{ 1 | divided_by: collection.image.aspect_ratio | times: 100 }}%;"{% endif -%}
+          >
+            <img
+              srcset="{%- if collection.image.width >= 375 -%}{{ collection.image | image_url: width: 375 }} 375w{%- endif -%}
+                {%- if collection.image.width >= 750 -%},{{ collection.image | image_url: width: 750 }} 750w{%- endif -%}
+                {%- if collection.image.width >= 1100 -%},{{ collection.image | image_url: width: 1100 }} 1100w{%- endif -%}
+                {%- if collection.image.width >= 1500 -%},{{ collection.image | image_url: width: 1500 }} 1500w{%- endif -%}
+                {%- if collection.image.width >= 2200 -%},{{ collection.image | image_url: width: 2200 }} 2200w{%- endif -%}
+                {%- if collection.image.width >= 3000 -%},{{ collection.image | image_url: width: 3000 }} 3000w{%- endif -%},
+                {{ collection.image | image_url }} {{ collection.image.width }}w"
+              src="{{ collection.image | image_url: width: 1100 }}"
+              sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
+              alt="{{ collection.title | escape }}"
+              loading="auto"
+              width="{{ collection.image.width }}"
+              height="{{ collection.image.height }}"
+            />
+          </lazy-image>
+        </use-animate>
+      </div>
+    {%- endif -%}
+    <div class="page-width">
+      <div class="collection-hero__text-wrapper">
+        <h1 class="collection-hero__title {{ section.settings.heading_size }}">
+          <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}:</span>
+          {{ collection.title | escape }}
+        </h1>
+
+       {%- if section.settings.show_description and collection.description != blank -%}
+  <div class="brand-description-section" style="margin-top: 20px;">
+    <!-- 常に表示される部分 -->
+     <div class="brand-description-wrapper"> 
+    <div class="brand-intro">
+      <p class="brand-excerpt">
+        {% if collection.metafields.custom.short_description != blank %}
+          {{ collection.metafields.custom.short_description }}
+        {% else %}
+          {{ collection.description | strip_html | truncate: 200 }}
+        {% endif %}
+      </p>
+    </div>
+    
+    <!-- 折りたたまれている詳細部分 -->
+    <div class="brand-details" id="brandDetails">
+      <div class="brand-content">
+        <div class="brand-full-description">
+          {{ collection.description }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- 展開/折りたたみボタン -->
+    <button class="brand-toggle-btn" id="brandToggleBtn" aria-expanded="false">
+      <span class="btn-text">view more</span>
+      <svg class="btn-icon" width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+           </div> 
+  </div>
+  
+  <style>
+
+.brand-description-wrapper {
+  max-width: 80%;
+  margin: 0 auto;
+}
+    .brand-description-section {
+      margin: 0;
+      padding: 0;
+    }
+
+   .brand-excerpt {
+  font-family: 'Garamond', 'Baskerville', 'Caslon', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #212326;
+  margin-bottom: 0;
+  transition: opacity 0.3s ease;
+  max-height: calc(1.7em * 3);  /* 3行分の高さ */
+  overflow: hidden;
+  position: relative;
+}
+
+
+
+    .brand-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand-details.active {
+      max-height: 3000px;
+      transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand-content {
+      padding-top: 20px;
+    }
+
+    .brand-full-description {
+      font-family: 'Garamond', 'Baskerville', 'Caslon', serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #212326;
+    }
+
+    .brand-full-description h1,
+    .brand-full-description h2,
+    .brand-full-description h3,
+    .brand-full-description h4,
+    .brand-full-description h5,
+    .brand-full-description h6 {
+      font-family: 'Garamond', 'Baskerville', 'Caslon', serif;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      margin: 25px 0 15px 0;
+      color: #212326;
+    }
+
+    .brand-full-description h2 { font-size: 24px; }
+    .brand-full-description h3 { font-size: 20px; }
+    .brand-full-description h4 { font-size: 18px; }
+
+    .brand-full-description p {
+      margin-bottom: 15px;
+    }
+
+    .brand-full-description img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .brand-full-description ul,
+    .brand-full-description ol {
+      margin: 15px 0;
+      padding-left: 25px;
+    }
+
+    .brand-full-description li {
+      margin-bottom: 8px;
+    }
+
+    .brand-toggle-btn {
+      background: none;
+      border: none;
+      color: #212326;
+      font-family: 'Garamond', 'Baskerville', 'Caslon', serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      padding: 0;
+      margin-top: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .brand-toggle-btn:hover {
+      opacity: 0.7;
+    }
+
+    .brand-toggle-btn .btn-icon {
+      transition: transform 0.3s ease;
+      width: 16px;
+      height: 16px;
+    }
+
+    .brand-toggle-btn[aria-expanded="true"] .btn-icon {
+      transform: rotate(180deg);
+    }
+
+    .brand-excerpt {
+  transition: opacity 0.3s ease;
+}
+
+.brand-excerpt.hidden {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+    /* モバイル対応 */
+    @media (max-width: 768px) {
+      .brand-excerpt {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+      }
+      
+      .brand-full-description {
+        font-size: 13px;
+      }
+      
+      .brand-toggle-btn {
+        font-size: 12px;
+      }
+    }
+  </style>
+  
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('brandToggleBtn');
+  const brandDetails = document.getElementById('brandDetails');
+  const brandExcerpt = document.querySelector('.brand-excerpt');
+  const btnText = toggleBtn.querySelector('.btn-text');
+  
+  if (toggleBtn && brandDetails && brandExcerpt) {
+    toggleBtn.addEventListener('click', function() {
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      
+      if (!isExpanded) {
+        // 展開時
+        brandDetails.classList.add('active');
+        brandExcerpt.classList.add('hidden');
+        this.setAttribute('aria-expanded', 'true');
+        btnText.textContent = 'view less';
+      } else {
+        // 折りたたみ時
+        brandDetails.classList.remove('active');
+        brandExcerpt.classList.remove('hidden');
+        this.setAttribute('aria-expanded', 'false');
+        btnText.textContent = 'view more';
+      }
+    });
+  }
+});
+  </script>
+{%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-collection-banner.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.main-collection-banner.settings.paragraph.content"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.main-collection-banner.settings.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.main-collection-banner.settings.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.main-collection-banner.settings.heading_size.options__3.label"
+        }
+      ],
+      "default": "h0",
+      "label": "t:sections.main-collection-banner.settings.heading_size.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.show_description.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.show_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_overlay",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.apply_overlay.label",
+      "info": "t:sections.main-collection-banner.settings.apply_overlay.info"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "options": [
+        {
+          "value": "20% 0",
+          "label": "t:sections.all.image_position.options__1.label"
+        },
+        {
+          "value": "top center",
+          "label": "t:sections.all.image_position.options__2.label"
+        },
+        {
+          "value": "80% 0",
+          "label": "t:sections.all.image_position.options__3.label"
+        },
+        {
+          "value": "20% 50%",
+          "label": "t:sections.all.image_position.options__4.label"
+        },
+        {
+          "value": "center center",
+          "label": "t:sections.all.image_position.options__5.label"
+        },
+        {
+          "value": "80% 50%",
+          "label": "t:sections.all.image_position.options__6.label"
+        },
+        {
+          "value": "20% 100%",
+          "label": "t:sections.all.image_position.options__7.label"
+        },
+        {
+          "value": "bottom center",
+          "label": "t:sections.all.image_position.options__8.label"
+        },
+        {
+          "value": "80% 100%",
+          "label": "t:sections.all.image_position.options__9.label"
+        }
+      ],
+      "default": "center center",
+      "label": "t:sections.all.image_position.label",
+      "info": "t:sections.all.image_position.info"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "450px",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "550px",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__3.label"
+        },
+        {
+          "value": "650px",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__4.label"
+        },
+        {
+          "value": "750px",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__5.label"
+        },
+        {
+          "value": "100vh",
+          "label": "t:sections.main-collection-banner.settings.image_ratio.options__6.label"
+        }
+      ],
+      "default": "100vh",
+      "label": "t:sections.main-collection-banner.settings.image_ratio.label",
+      "info": "t:sections.main-collection-banner.settings.image_ratio.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.mobile_layout.header.content"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_ratio",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__1.label"
+        },
+        {
+          "value": "250px",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__2.label"
+        },
+        {
+          "value": "300px",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__3.label"
+        },
+        {
+          "value": "400px",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__4.label"
+        },
+        {
+          "value": "500px",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__5.label"
+        },
+        {
+          "value": "100vh",
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__6.label"
+        }
+      ],
+      "default": "auto",
+      "label": "t:sections.all.mobile_layout.mobile_image_ratio.label",
+      "info": "t:sections.all.mobile_layout.mobile_image_ratio.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_text_below",
+      "default": false,
+      "label": "t:sections.main-collection-banner.settings.show_text_below.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.header.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "t:sections.all.padding.padding_top.unit",
+      "label": "t:sections.all.padding.padding_top.label",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "t:sections.all.padding.padding_bottom.unit",
+      "label": "t:sections.all.padding.padding_bottom.label",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

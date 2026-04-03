@@ -1,0 +1,11 @@
+
+  @media screen and (min-width: 750px) {
+   .add-colage1  {
+   
+    grid-template-columns: 10% 30% !important;
+  }
+}
+
+
+
+

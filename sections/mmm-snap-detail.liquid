@@ -1,0 +1,400 @@
+{%- liquid
+  assign snap        = metaobject
+  assign snap_images = snap.snap_image.value
+  assign staff       = snap.staff_ref.value
+
+  assign first_img = blank
+  for img in snap_images
+    assign first_img = img
+    break
+  endfor
+
+  assign staff_name_encoded = staff.name | url_encode
+  assign staff_page_url     = staff.system.url | default: '/pages/staffsnap'
+-%}
+
+{%- style -%}
+  .mmm-sd {
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .mmm-sd__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: grid;
+    gap: 64px;
+  }
+
+  @media (min-width: 990px) {
+    .mmm-sd__container {
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: start;
+    }
+    .mmm-sd__image-col {
+      position: sticky;
+      top: 120px;
+    }
+  }
+
+  @media (max-width: 989px) {
+    .mmm-sd__container {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  /* ── メイン画像 ── */
+  .mmm-sd__main-wrap {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: #f0f0f0;
+    overflow: hidden;
+  }
+
+  .mmm-sd__main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── サムネイル ── */
+  .mmm-sd__thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .mmm-sd__thumb {
+    width: 68px;
+    height: 86px;
+    padding: 0;
+    border: 2px solid transparent;
+    background: #f0f0f0;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .mmm-sd__thumb.is-active {
+    border-color: rgb(var(--color-base-text));
+  }
+
+  .mmm-sd__thumb:not(.is-active):hover {
+    border-color: rgba(var(--color-base-text), 0.35);
+  }
+
+  .mmm-sd__thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* ── 情報カラム ── */
+  .mmm-sd__info {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .mmm-sd__profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+  }
+
+  .mmm-sd__avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .mmm-sd__profile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mmm-sd__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mmm-sd__name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+    margin: 0;
+  }
+
+  .mmm-sd__name:hover {
+    text-decoration: underline;
+  }
+
+  .mmm-sd__ig {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    opacity: 0.55;
+    flex-shrink: 0;
+  }
+
+  .mmm-sd__ig:hover {
+    opacity: 1;
+  }
+
+  .mmm-sd__meta {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .mmm-sd__comment {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin: 0;
+  }
+
+  .mmm-sd__wearing-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  .mmm-sd__products {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mmm-sd__product {
+    display: flex;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .mmm-sd__product:hover {
+    opacity: 0.7;
+  }
+
+  .mmm-sd__product-thumb {
+    width: 78px;
+    height: 98px;
+    object-fit: cover;
+    background: #f0f0f0;
+    flex-shrink: 0;
+  }
+
+  .mmm-sd__product-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mmm-sd__product-vendor {
+    font-size: 11px;
+    opacity: 0.55;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mmm-sd__product-title {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .mmm-sd__product-price {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mmm-sd__thumb,
+    .mmm-sd__ig,
+    .mmm-sd__product { transition: none; }
+  }
+{%- endstyle -%}
+
+<div class="mmm-sd">
+  {%- if snap != blank -%}
+    <div class="mmm-sd__container">
+
+      {%- comment -%}── 左カラム: ギャラリー ──{%- endcomment -%}
+      <div class="mmm-sd__image-col">
+        <div class="mmm-sd__main-wrap">
+          {%- if first_img != blank -%}
+            {{ first_img | image_url: width: 1200 | image_tag:
+              loading: 'eager',
+              id: 'MmmSdMainImg',
+              class: 'mmm-sd__main-img',
+              alt: snap.comment | escape
+            }}
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag: 'mmm-sd__main-img' }}
+          {%- endif -%}
+        </div>
+
+        {%- assign images_count = snap_images | size -%}
+        {%- if images_count > 1 -%}
+          <div class="mmm-sd__thumbs" id="MmmSdThumbs">
+            {%- for img in snap_images -%}
+              <button
+                class="mmm-sd__thumb{% if forloop.first %} is-active{% endif %}"
+                type="button"
+                data-src="{{ img | image_url: width: 1200 }}"
+                aria-label="{{ forloop.index }}枚目の画像"
+                aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              >
+                {{ img | image_url: width: 140 | image_tag:
+                  loading: 'lazy',
+                  class: 'mmm-sd__thumb-img',
+                  alt: ''
+                }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%}── 右カラム: 情報 ──{%- endcomment -%}
+      <div class="mmm-sd__info">
+
+        {%- if staff != blank -%}
+          <div class="mmm-sd__profile">
+            {%- if staff.profile_photo != blank -%}
+              <a href="{{ staff_page_url }}" aria-label="{{ staff.name | escape }}のページ" tabindex="-1" aria-hidden="true">
+                {{ staff.profile_photo | image_url: width: 120 | image_tag:
+                  class: 'mmm-sd__avatar',
+                  alt: staff.name | escape
+                }}
+              </a>
+            {%- endif -%}
+
+            <div class="mmm-sd__profile-body">
+              <div class="mmm-sd__name-row">
+                <a href="{{ staff_page_url }}" class="mmm-sd__name">{{ staff.name }}</a>
+
+                {%- if staff.instagram_url.url != blank -%}
+                  <a
+                    href="{{ staff.instagram_url.url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mmm-sd__ig"
+                    aria-label="{{ staff.name | escape }}のInstagram"
+                  >
+                    <svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </a>
+                {%- endif -%}
+              </div>
+
+              {%- if staff.height != blank -%}
+                <p class="mmm-sd__meta">{{ staff.height }}cm</p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if snap.comment != blank -%}
+          <div class="mmm-sd__comment">{{ snap.comment | newline_to_br }}</div>
+        {%- endif -%}
+
+        {%- assign related = snap.related_products.value -%}
+        {%- if related.size > 0 -%}
+          <div class="mmm-sd__wearing">
+            <h4 class="mmm-sd__wearing-label">Wearing Items</h4>
+            <div class="mmm-sd__products">
+              {%- for prod in related -%}
+                <a href="{{ prod.url }}" class="mmm-sd__product">
+                  {%- if prod.featured_image != blank -%}
+                    {{ prod.featured_image | image_url: width: 160 | image_tag:
+                      class: 'mmm-sd__product-thumb',
+                      loading: 'lazy',
+                      alt: prod.title | escape
+                    }}
+                  {%- endif -%}
+                  <div class="mmm-sd__product-info">
+                    {%- if prod.vendor != blank -%}
+                      <span class="mmm-sd__product-vendor">{{ prod.vendor }}</span>
+                    {%- endif -%}
+                    <span class="mmm-sd__product-title">{{ prod.title }}</span>
+                    <span class="mmm-sd__product-price">{{ prod.price | money }}</span>
+                  </div>
+                </a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+      </div>
+    </div>
+  {%- else -%}
+    <div style="text-align:center; padding:100px 32px;">
+      <p>スナップデータが見つかりませんでした。</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% javascript %}
+(function () {
+  var thumbsEl = document.getElementById('MmmSdThumbs');
+  var mainImg  = document.getElementById('MmmSdMainImg');
+  if (!thumbsEl || !mainImg) return;
+
+  thumbsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.mmm-sd__thumb');
+    if (!btn) return;
+
+    var src = btn.dataset.src;
+    if (!src) return;
+
+    mainImg.src = src;
+
+    var all = thumbsEl.querySelectorAll('.mmm-sd__thumb');
+    for (var i = 0; i < all.length; i++) {
+      var active = all[i] === btn;
+      all[i].classList.toggle('is-active', active);
+      all[i].setAttribute('aria-pressed', active ? 'true' : 'false');
+    }
+  });
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Staff Snap Detail",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "余白設定" },
+    { "type": "range", "id": "padding_top",    "min": 0, "max": 100, "default": 36, "label": "上部余白" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "default": 36, "label": "下部余白" }
+  ],
+  "presets": [{ "name": "Staff Snap Detail" }]
+}
+{% endschema %}

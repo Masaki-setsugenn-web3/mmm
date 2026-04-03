@@ -1,0 +1,113 @@
+{%- liquid
+  assign all_snaps = shop.metaobjects.staffsnap.values
+  assign sorted_snaps = all_snaps | sort: 'post_date' | reverse
+  assign display_count = section.settings.snap_count | default: 4
+  assign featured_snaps = sorted_snaps | slice: 0, display_count
+-%}
+
+{%- style -%}
+  .mmm-ss-featured-section {
+    --mmm-ss-spacing-sm: 16px;
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+  .mmm-ss-featured-container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+  .mmm-ss-featured-header { display: flex; justify-content: {{ section.settings.heading_alignment }}; margin-bottom: 32px; }
+  .mmm-ss-featured-heading { font-size: 24px; font-weight: 600; margin: 0; letter-spacing: 0.05em; }
+  
+  /* グリッド */
+  .mmm-ss-featured-grid { display: flex; gap: 16px; }
+  @media (max-width: 749px) {
+    .mmm-ss-featured-grid { overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 20px; }
+    .mmm-ss-card { min-width: 260px; scroll-snap-align: start; }
+  }
+  @media (min-width: 750px) {
+    .mmm-ss-featured-grid { display: grid; grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr); }
+  }
+
+  .mmm-ss-card { text-decoration: none; color: inherit; display: block; }
+  .mmm-ss-card:hover { opacity: 0.8; }
+  .mmm-ss-card-image-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; background: #f5f5f5; margin-bottom: 8px; }
+  .mmm-ss-card-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+  .mmm-ss-card:hover .mmm-ss-card-image { transform: scale(1.03); }
+  .mmm-ss-card-staff-name { font-weight: 600; font-size: 13px; margin: 0; }
+  .mmm-ss-card-meta { font-size: 12px; opacity: 0.7; margin: 0; }
+  
+  .mmm-ss-view-all { text-align: center; margin-top: 48px; }
+  .mmm-ss-button { display: inline-block; padding: 10px 24px; border: 1px solid currentColor; text-decoration: none; font-size: 13px; letter-spacing: 0.1em; transition: 0.3s; }
+  .mmm-ss-button:hover { background: #000; color: #fff; }
+  .mmm-ss-divider { margin-top: 64px; border-top: 1px solid rgba(0,0,0,0.1); }
+{%- endstyle -%}
+
+<div class="mmm-ss-featured-section">
+  <div class="mmm-ss-featured-container">
+    {%- if section.settings.heading != blank -%}
+      <div class="mmm-ss-featured-header">
+        <h2 class="mmm-ss-featured-heading">{{ section.settings.heading }}</h2>
+      </div>
+    {%- endif -%}
+
+    {%- if featured_snaps.size > 0 -%}
+      <div class="mmm-ss-featured-grid">
+        {%- for snap in featured_snaps -%}
+          <a href="{{ snap.system.url }}" class="mmm-ss-card">
+            
+            <div class="mmm-ss-card-image-wrapper">
+              {%- liquid
+                # 画像選定（サムネイル優先 > メイン > リスト対策）
+                assign thumb = snap.thumbnail_image.value
+                assign main = snap.snap_image.value
+                assign target = thumb | default: main
+                
+                for img in target
+                  assign target = img
+                  break
+                endfor
+              -%}
+              
+              {%- if target -%}
+                {{ target | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image' }}
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'mmm-ss-card-image' }}
+              {%- endif -%}
+            </div>
+            
+            <div class="mmm-ss-card-info">
+              <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
+              <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+      
+      {%- if section.settings.list_page_url != blank -%}
+        <div class="mmm-ss-view-all">
+          <a href="{{ section.settings.list_page_url }}" class="mmm-ss-button">VIEW ALL</a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+    
+    {%- if section.settings.show_divider -%}
+      <div class="mmm-ss-divider"></div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured Staff Snaps",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "見出し", "default": "STAFF SNAP" },
+    { "type": "select", "id": "heading_alignment", "label": "配置", "options": [{"value":"flex-start","label":"左"},{"value":"center","label":"中央"}], "default": "center" },
+    { "type": "range", "id": "snap_count", "label": "表示数", "min": 2, "max": 8, "default": 4 },
+    { "type": "range", "id": "columns_desktop", "label": "列数(PC)", "min": 2, "max": 6, "default": 4 },
+    { "type": "url", "id": "list_page_url", "label": "一覧ページURL" },
+    { "type": "checkbox", "id": "show_divider", "label": "区切り線", "default": false },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "default": 36, "label": "上部余白" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "default": 36, "label": "下部余白" }
+  ],
+  "presets": [{ "name": "Featured Staff Snaps" }]
+}
+{% endschema %}

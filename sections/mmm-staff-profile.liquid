@@ -1,0 +1,320 @@
+{%- liquid
+  assign staff     = metaobject
+  assign all_snaps = shop.metaobjects.staffsnap.values | sort: 'post_date' | reverse
+-%}
+
+{%- style -%}
+  .mmm-sp {
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .mmm-sp__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── プロフィールヘッダー ── */
+  .mmm-sp__profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 749px) {
+    .mmm-sp__profile {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+  }
+
+  .mmm-sp__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .mmm-sp__avatar--placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(var(--color-base-text), 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .mmm-sp__profile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 8px;
+    flex: 1;
+  }
+
+  .mmm-sp__name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 749px) {
+    .mmm-sp__name-row { justify-content: center; }
+  }
+
+  .mmm-sp__name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .mmm-sp__ig {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    opacity: 0.55;
+    transition: opacity 0.2s;
+  }
+  .mmm-sp__ig:hover { opacity: 1; }
+
+  .mmm-sp__meta {
+    font-size: 0.9rem;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .mmm-sp__intro {
+    font-size: 0.95rem;
+    line-height: 1.85;
+    margin: 0;
+    max-width: 540px;
+  }
+
+  @media (max-width: 749px) {
+    .mmm-sp__intro { max-width: none; }
+  }
+
+  /* ── スナップグリッド ── */
+  .mmm-sp__grid-heading {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 28px;
+  }
+
+  .mmm-sp__grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+  }
+
+  @media (max-width: 989px) { .mmm-sp__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px)  { .mmm-sp__grid { grid-template-columns: 1fr; } }
+
+  .mmm-sp__snap {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .mmm-sp__snap:hover .mmm-sp__snap-img { transform: scale(1.03); }
+
+  .mmm-sp__snap-img-wrap {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: #f0f0f0;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .mmm-sp__snap-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+
+  .mmm-sp__snap-date {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+  .mmm-sp__empty {
+    text-align: center;
+    padding: 60px 0;
+    opacity: 0.5;
+  }
+
+  /* ── 一覧へ戻るリンク ── */
+  .mmm-sp__back {
+    text-align: center;
+    margin-top: 56px;
+  }
+
+  .mmm-sp__back-link {
+    display: inline-block;
+    padding: 10px 28px;
+    border: 1px solid currentColor;
+    text-decoration: none;
+    color: inherit;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  .mmm-sp__back-link:hover {
+    background: rgb(var(--color-base-text));
+    color: rgb(var(--color-base-background));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mmm-sp__ig,
+    .mmm-sp__back-link { transition: none; }
+    .mmm-sp__snap-img { transition: none; }
+    .mmm-sp__snap:hover .mmm-sp__snap-img { transform: none; }
+  }
+{%- endstyle -%}
+
+<div class="mmm-sp">
+  {%- if staff != blank -%}
+    <div class="mmm-sp__inner">
+
+      {%- comment -%}── プロフィールヘッダー ──{%- endcomment -%}
+      <div class="mmm-sp__profile">
+        {%- if staff.profile_photo != blank -%}
+          {{ staff.profile_photo | image_url: width: 240 | image_tag:
+            class: 'mmm-sp__avatar',
+            alt: staff.name | escape
+          }}
+        {%- else -%}
+          <span class="mmm-sp__avatar--placeholder" aria-hidden="true">
+            {{- staff.name | slice: 0, 1 | upcase -}}
+          </span>
+        {%- endif -%}
+
+        <div class="mmm-sp__profile-body">
+          <div class="mmm-sp__name-row">
+            <h1 class="mmm-sp__name">{{ staff.name }}</h1>
+            {%- if staff.instagram_url.url != blank -%}
+              <a
+                href="{{ staff.instagram_url.url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mmm-sp__ig"
+                aria-label="{{ staff.name | escape }}のInstagram"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
+            {%- endif -%}
+          </div>
+
+          {%- if staff.height != blank -%}
+            <p class="mmm-sp__meta">{{ staff.height }}cm</p>
+          {%- endif -%}
+
+          {%- if staff.introduction != blank -%}
+            <p class="mmm-sp__intro">{{ staff.introduction | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%}── このスタッフのスナップ一覧 ──{%- endcomment -%}
+      {%- assign snap_count = 0 -%}
+
+      {%- comment -%}
+        1パス目: 件数カウント
+        Liquidはfor+ifの結果を直接配列に格納できないため、
+        まず件数を数えてから2パス目でレンダリングする
+      {%- endcomment -%}
+      {%- for snap in all_snaps -%}
+        {%- if snap.staff_ref.value.name == staff.name -%}
+          {%- assign snap_count = snap_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if snap_count > 0 -%}
+        <p class="mmm-sp__grid-heading">Snaps — {{ snap_count }}</p>
+        <div class="mmm-sp__grid">
+          {%- for snap in all_snaps -%}
+            {%- unless snap.staff_ref.value.name == staff.name -%}
+              {%- continue -%}
+            {%- endunless -%}
+
+            <a href="{{ snap.system.url }}" class="mmm-sp__snap">
+              <div class="mmm-sp__snap-img-wrap">
+                {%- liquid
+                  assign thumb  = snap.thumbnail_image.value
+                  assign main   = snap.snap_image.value
+                  assign target = thumb | default: main
+                  for img in target
+                    assign target = img
+                    break
+                  endfor
+                -%}
+                {%- if target != blank -%}
+                  {{ target | image_url: width: 600 | image_tag:
+                    loading: 'lazy',
+                    class: 'mmm-sp__snap-img',
+                    alt: snap.comment | escape | truncate: 60
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'mmm-sp__snap-img' }}
+                {%- endif -%}
+              </div>
+              <span class="mmm-sp__snap-date">{{ snap.post_date | date: "%Y.%m.%d" }}</span>
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="mmm-sp__empty">
+          <p>スナップはまだありません</p>
+        </div>
+      {%- endif -%}
+
+      <div class="mmm-sp__back">
+        <a href="/pages/staffsnap" class="mmm-sp__back-link">View All Snaps</a>
+      </div>
+
+    </div>
+  {%- else -%}
+    <div style="text-align:center; padding:100px 32px;">
+      <p>スタッフデータが見つかりませんでした。</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Staff Profile",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "range", "id": "columns_desktop", "label": "列数(PC)", "min": 2, "max": 5, "default": 3 },
+    { "type": "header", "content": "余白設定" },
+    { "type": "range", "id": "padding_top",    "min": 0, "max": 100, "default": 48, "label": "上部余白" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "default": 48, "label": "下部余白" }
+  ],
+  "presets": [{ "name": "Staff Profile" }]
+}
+{% endschema %}

@@ -1,0 +1,26 @@
+{{ '//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css' | stylesheet_tag }}
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" defer="defer"></script>
+
+<div style="width:300px; clear:both;">
+  <p>
+    <label for="date">お届け希望日</label>
+    <input id="date" type="text" name="attributes[date]" value="{{ cart.attributes.date }}" placeholder="YYYY/MM/DD"/>
+    <span style="display:block" class="instructions">2営業日以内に発送致します </span>
+  </p>
+</div>
+
+<script>
+  window.onload = function() {
+      if (window.jQuery) {
+        let $ = window.jQuery;
+
+        $(function() {
+          $("#date").datepicker({
+          minDate: +1,
+          maxDate: '+2M',
+          beforeShowDay: $.datepicker.noWeekends
+        });
+      });
+    }
+  }
+</script>
