@@ -1,8 +1,14 @@
 {%- liquid
-  assign all_snaps      = shop.metaobjects.staffsnap.values | sort: 'post_date' | reverse
-  assign items_per_page = section.settings.items_per_page | default: 24
+  assign raw_snaps      = shop.metaobjects.staffsnap.values
+  assign sorted_snaps   = raw_snaps | sort: 'post_date' | reverse
+  if sorted_snaps.size > 0
+    assign all_snaps = sorted_snaps
+  else
+    assign all_snaps = raw_snaps
+  endif
+  assign items_per_page  = section.settings.items_per_page | default: 24
   assign displayed_snaps = all_snaps | slice: 0, items_per_page
-  assign all_staff      = shop.metaobjects.staff.values | sort: 'name'
+  assign all_staff       = shop.metaobjects.staff.values | sort: 'name'
 -%}
 
 {%- style -%}

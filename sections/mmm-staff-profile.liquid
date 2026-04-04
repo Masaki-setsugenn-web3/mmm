@@ -1,6 +1,12 @@
 {%- liquid
-  assign staff     = metaobject
-  assign all_snaps = shop.metaobjects.staffsnap.values | sort: 'post_date' | reverse
+  assign staff        = metaobject
+  assign raw_snaps    = shop.metaobjects.staffsnap.values
+  assign sorted_snaps = raw_snaps | sort: 'post_date' | reverse
+  if sorted_snaps.size > 0
+    assign all_snaps = sorted_snaps
+  else
+    assign all_snaps = raw_snaps
+  endif
 -%}
 
 {%- style -%}

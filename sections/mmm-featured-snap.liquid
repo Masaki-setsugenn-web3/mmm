@@ -52,30 +52,31 @@
       <div class="mmm-ss-featured-grid">
         {%- for snap in featured_snaps -%}
           <a href="{{ snap.system.url }}" class="mmm-ss-card">
-            
+
             <div class="mmm-ss-card-image-wrapper">
               {%- liquid
-                # 画像選定（サムネイル優先 > メイン > リスト対策）
-                assign thumb = snap.thumbnail_image.value
-                assign main = snap.snap_image.value
+                assign thumb  = snap.thumbnail_image.value
+                assign main   = snap.snap_image.value
                 assign target = thumb | default: main
-                
                 for img in target
                   assign target = img
                   break
                 endfor
               -%}
-              
-              {%- if target -%}
-                {{ target | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image' }}
+              {%- if target != blank -%}
+                {{ target | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image', alt: snap.staff_ref.value.name | escape }}
               {%- else -%}
                 {{ 'image' | placeholder_svg_tag: 'mmm-ss-card-image' }}
               {%- endif -%}
             </div>
-            
+
             <div class="mmm-ss-card-info">
-              <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
-              <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
+              {%- if snap.staff_ref.value.name != blank -%}
+                <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
+              {%- endif -%}
+              {%- if snap.staff_ref.value.height != blank -%}
+                <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
+              {%- endif -%}
             </div>
           </a>
         {%- endfor -%}
