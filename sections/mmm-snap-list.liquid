@@ -1,14 +1,7 @@
 {%- liquid
-  assign raw_snaps      = shop.metaobjects.staffsnap.values
-  assign sorted_snaps   = raw_snaps | sort: 'post_date' | reverse
-  if sorted_snaps.size > 0
-    assign all_snaps = sorted_snaps
-  else
-    assign all_snaps = raw_snaps
-  endif
-  assign items_per_page  = section.settings.items_per_page | default: 24
-  assign displayed_snaps = all_snaps | slice: 0, items_per_page
-  assign all_staff       = shop.metaobjects.staff.values | sort: 'name'
+  assign all_snaps     = shop.metaobjects.staffsnap.values
+  assign items_per_page = section.settings.items_per_page | default: 24
+  assign all_staff     = shop.metaobjects.staff.values
 -%}
 
 {%- style -%}
@@ -146,49 +139,28 @@
       </nav>
     {%- endif -%}
 
-    {%- if displayed_snaps.size > 0 -%}
-      <div class="mmm-sl__grid">
-        {%- for snap in displayed_snaps -%}
-          {%- if snap.snap_image.value == blank -%}{%- continue -%}{%- endif -%}
-          <a href="{{ snap.system.url }}" class="mmm-sl__item">
-            <div class="mmm-sl__item-img-wrap">
-              {%- liquid
-                assign thumb  = snap.thumbnail_image.value
-                assign main   = snap.snap_image.value
-                assign target = thumb | default: main
-                for img in target
-                  assign target = img
-                  break
-                endfor
-              -%}
-              {%- if target != blank -%}
-                {{ target | image_url: width: 600 | image_tag:
-                  loading: 'lazy',
-                  class: 'mmm-sl__item-img',
-                  alt: snap.staff_ref.value.name | escape
-                }}
-              {%- else -%}
-                {{ 'image' | placeholder_svg_tag: 'mmm-sl__item-img' }}
-              {%- endif -%}
+    <div class="mmm-sl__grid">
+      {%- for snap in all_snaps limit: items_per_page -%}
+        {%- if snap.snap_image == blank -%}{%- continue -%}{%- endif -%}
+        {%- assign snap_img = snap.snap_image.value | first -%}
+        <a href="{{ snap.system.url }}" class="mmm-sl__item">
+          <div class="mmm-sl__item-img-wrap">
+            {{ snap_img | image_url: width: 600 | image_tag:
+              loading: 'lazy',
+              class: 'mmm-sl__item-img',
+              alt: snap.staff_ref.value.name | escape
+            }}
+          </div>
+          <div class="mmm-sl__item-info">
+            <p class="mmm-sl__item-name">{{ snap.staff_ref.value.name }}</p>
+            <div class="mmm-sl__item-meta">
+              <span>{{ snap.post_date | date: "%Y.%m.%d" }}</span>
+              <span>{{ snap.staff_ref.value.height }}cm</span>
             </div>
-
-            <div class="mmm-sl__item-info">
-              <p class="mmm-sl__item-name">{{ snap.staff_ref.value.name }}</p>
-              <div class="mmm-sl__item-meta">
-                <span>{{ snap.post_date | date: "%Y.%m.%d" }}</span>
-                {%- if snap.staff_ref.value.height != blank -%}
-                  <span>{{ snap.staff_ref.value.height }}cm</span>
-                {%- endif -%}
-              </div>
-            </div>
-          </a>
-        {%- endfor -%}
-      </div>
-    {%- else -%}
-      <div style="text-align:center; padding:60px 0;">
-        <p>{{ section.settings.empty_message }}</p>
-      </div>
-    {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
 
   </div>
 </div>

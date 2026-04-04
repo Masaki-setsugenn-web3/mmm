@@ -1,16 +1,15 @@
 {%- liquid
-  assign snap        = metaobject
-  assign snap_images = snap.snap_image.value
-  assign staff       = snap.staff_ref.value
-
-  assign first_img = blank
-  for img in snap_images
-    assign first_img = img
-    break
-  endfor
-
-  assign staff_name_encoded = staff.name | url_encode
-  assign staff_page_url     = staff.system.url | default: '/pages/staffsnap'
+  assign snap = metaobject
+  if snap != blank
+    assign snap_images = snap.snap_image.value
+    assign first_img   = snap_images | first
+    assign staff       = snap.staff_ref.value
+    if staff != blank
+      assign staff_page_url = staff.system.url | default: '/pages/staffsnap'
+    else
+      assign staff_page_url = '/pages/staffsnap'
+    endif
+  endif
 -%}
 
 {%- style -%}
@@ -256,7 +255,7 @@
           {%- endif -%}
         </div>
 
-        {%- assign images_count = snap_images | size -%}
+        {%- assign images_count = snap_images | size | default: 0 -%}
         {%- if images_count > 1 -%}
           <div class="mmm-sd__thumbs" id="MmmSdThumbs">
             {%- for img in snap_images -%}

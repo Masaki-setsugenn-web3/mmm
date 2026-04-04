@@ -1,13 +1,6 @@
 {%- liquid
-  assign raw_snaps    = shop.metaobjects.staffsnap.values
-  assign sorted_snaps = raw_snaps | sort: 'post_date' | reverse
-  if sorted_snaps.size > 0
-    assign all_snaps = sorted_snaps
-  else
-    assign all_snaps = raw_snaps
-  endif
-  assign display_count   = section.settings.snap_count | default: 4
-  assign featured_snaps  = all_snaps | slice: 0, display_count
+  assign all_snaps    = shop.metaobjects.staffsnap.values
+  assign display_count = section.settings.snap_count | default: 4
 -%}
 
 {%- style -%}
@@ -53,46 +46,26 @@
       </div>
     {%- endif -%}
 
-    {%- if featured_snaps.size > 0 -%}
-      <div class="mmm-ss-featured-grid">
-        {%- for snap in featured_snaps -%}
-          {%- if snap.snap_image.value == blank -%}{%- continue -%}{%- endif -%}
-          <a href="{{ snap.system.url }}" class="mmm-ss-card">
+    <div class="mmm-ss-featured-grid">
+      {%- for snap in all_snaps limit: display_count -%}
+        {%- if snap.snap_image == blank -%}{%- continue -%}{%- endif -%}
+        {%- assign snap_img = snap.snap_image.value | first -%}
+        <a href="{{ snap.system.url }}" class="mmm-ss-card">
+          <div class="mmm-ss-card-image-wrapper">
+            {{ snap_img | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image', alt: snap.staff_ref.value.name | escape }}
+          </div>
+          <div class="mmm-ss-card-info">
+            <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
+            <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
 
-            <div class="mmm-ss-card-image-wrapper">
-              {%- liquid
-                assign thumb  = snap.thumbnail_image.value
-                assign main   = snap.snap_image.value
-                assign target = thumb | default: main
-                for img in target
-                  assign target = img
-                  break
-                endfor
-              -%}
-              {%- if target != blank -%}
-                {{ target | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image', alt: snap.staff_ref.value.name | escape }}
-              {%- else -%}
-                {{ 'image' | placeholder_svg_tag: 'mmm-ss-card-image' }}
-              {%- endif -%}
-            </div>
-
-            <div class="mmm-ss-card-info">
-              {%- if snap.staff_ref.value.name != blank -%}
-                <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
-              {%- endif -%}
-              {%- if snap.staff_ref.value.height != blank -%}
-                <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
-              {%- endif -%}
-            </div>
-          </a>
-        {%- endfor -%}
+    {%- if section.settings.list_page_url != blank -%}
+      <div class="mmm-ss-view-all">
+        <a href="{{ section.settings.list_page_url }}" class="mmm-ss-button">VIEW ALL</a>
       </div>
-      
-      {%- if section.settings.list_page_url != blank -%}
-        <div class="mmm-ss-view-all">
-          <a href="{{ section.settings.list_page_url }}" class="mmm-ss-button">VIEW ALL</a>
-        </div>
-      {%- endif -%}
     {%- endif -%}
     
     {%- if section.settings.show_divider -%}
