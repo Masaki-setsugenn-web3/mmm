@@ -48,9 +48,13 @@
       </div>
     {%- endif -%}
 
+    <p style="color:red;font-size:18px;font-weight:bold;">🔴 DEBUG featured: all_snaps={{ all_snaps.size | default: 'nil' }} / sorted={{ sorted_snaps.size | default: 'nil' }} / featured={{ featured_snaps.size | default: 'nil' }}</p>
+
     {%- if featured_snaps.size > 0 -%}
+      <p style="color:red;">🔴 DEBUG: featured_snaps ループ開始（{{ featured_snaps.size }}件）</p>
       <div class="mmm-ss-featured-grid">
         {%- for snap in featured_snaps -%}
+          <p style="color:red;">🔴 DEBUG snap[{{ forloop.index }}]: handle={{ snap.system.handle }} / staff={{ snap.staff_ref.value.name | default: 'なし' }} / snap_image.size={{ snap.snap_image.value.size | default: '0' }} / thumb={{ snap.thumbnail_image.value | default: 'なし' }}</p>
           <a href="{{ snap.system.url }}" class="mmm-ss-card">
 
             <div class="mmm-ss-card-image-wrapper">
@@ -63,9 +67,11 @@
                   break
                 endfor
               -%}
+              <p style="color:red;">🔴 DEBUG target={{ target | default: 'blank/nil' }}</p>
               {%- if target != blank -%}
                 {{ target | image_url: width: 600 | image_tag: loading: 'lazy', class: 'mmm-ss-card-image', alt: snap.staff_ref.value.name | escape }}
               {%- else -%}
+                <p style="color:red;">🔴 DEBUG: target が blank → プレースホルダー表示</p>
                 {{ 'image' | placeholder_svg_tag: 'mmm-ss-card-image' }}
               {%- endif -%}
             </div>
@@ -73,14 +79,20 @@
             <div class="mmm-ss-card-info">
               {%- if snap.staff_ref.value.name != blank -%}
                 <p class="mmm-ss-card-staff-name">{{ snap.staff_ref.value.name }}</p>
+              {%- else -%}
+                <p style="color:red;">🔴 DEBUG: name が blank でスキップ</p>
               {%- endif -%}
               {%- if snap.staff_ref.value.height != blank -%}
                 <p class="mmm-ss-card-meta">{{ snap.staff_ref.value.height }}cm</p>
+              {%- else -%}
+                <p style="color:red;">🔴 DEBUG: height が blank でスキップ</p>
               {%- endif -%}
             </div>
           </a>
         {%- endfor -%}
       </div>
+    {%- else -%}
+      <p style="color:red;font-size:18px;">🔴 DEBUG: featured_snaps.size == 0 のためグリッド非表示</p>
       
       {%- if section.settings.list_page_url != blank -%}
         <div class="mmm-ss-view-all">
