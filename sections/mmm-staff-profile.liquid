@@ -205,10 +205,7 @@
       {%- comment -%}── プロフィールヘッダー ──{%- endcomment -%}
       <div class="mmm-sp__profile">
         {%- if staff.profile_photo != blank -%}
-          {{ staff.profile_photo | image_url: width: 240 | image_tag:
-            class: 'mmm-sp__avatar',
-            alt: staff.name | escape
-          }}
+          <img src="{{ staff.profile_photo | image_url: width: 240 }}" class="mmm-sp__avatar" alt="{{ staff.name | escape }}">
         {%- else -%}
           <span class="mmm-sp__avatar--placeholder" aria-hidden="true">
             {{- staff.name | slice: 0, 1 | upcase -}}
@@ -218,9 +215,9 @@
         <div class="mmm-sp__profile-body">
           <div class="mmm-sp__name-row">
             <h1 class="mmm-sp__name">{{ staff.name }}</h1>
-            {%- if staff.instagram_url.url != blank -%}
+            {%- if staff.instagram_url.value != blank -%}
               <a
-                href="{{ staff.instagram_url.url }}"
+                href="{{ staff.instagram_url.value }}"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mmm-sp__ig"
@@ -270,13 +267,7 @@
                   assign target     = thumb | default: first_main
                 -%}
                 {%- if target != blank -%}
-                  {{ target | image_url: width: 600 | image_tag:
-                    loading: 'lazy',
-                    class: 'mmm-sp__snap-img',
-                    alt: snap.comment | escape | truncate: 60
-                  }}
-                {%- else -%}
-                  {{ 'image' | placeholder_svg_tag: 'mmm-sp__snap-img' }}
+                  <img src="{{ target | image_url: width: 600 }}" class="mmm-sp__snap-img" loading="lazy" alt="">
                 {%- endif -%}
               </div>
               <span class="mmm-sp__snap-date">{{ snap.post_date | date: "%Y.%m.%d" }}</span>

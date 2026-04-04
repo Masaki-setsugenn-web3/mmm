@@ -244,14 +244,7 @@
       <div class="mmm-sd__image-col">
         <div class="mmm-sd__main-wrap">
           {%- if first_img != blank -%}
-            {{ first_img | image_url: width: 1200 | image_tag:
-              loading: 'eager',
-              id: 'MmmSdMainImg',
-              class: 'mmm-sd__main-img',
-              alt: snap.comment | escape
-            }}
-          {%- else -%}
-            {{ 'image' | placeholder_svg_tag: 'mmm-sd__main-img' }}
+            <img src="{{ first_img | image_url: width: 1200 }}" id="MmmSdMainImg" class="mmm-sd__main-img" loading="eager" alt="{{ snap.comment | escape }}">
           {%- endif -%}
         </div>
 
@@ -266,11 +259,7 @@
                 aria-label="{{ forloop.index }}枚目の画像"
                 aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
               >
-                {{ img | image_url: width: 140 | image_tag:
-                  loading: 'lazy',
-                  class: 'mmm-sd__thumb-img',
-                  alt: ''
-                }}
+                <img src="{{ img | image_url: width: 140 }}" class="mmm-sd__thumb-img" loading="lazy" alt="">
               </button>
             {%- endfor -%}
           </div>
@@ -284,10 +273,7 @@
           <div class="mmm-sd__profile">
             {%- if staff.profile_photo != blank -%}
               <a href="{{ staff_page_url }}" aria-label="{{ staff.name | escape }}のページ" tabindex="-1" aria-hidden="true">
-                {{ staff.profile_photo | image_url: width: 120 | image_tag:
-                  class: 'mmm-sd__avatar',
-                  alt: staff.name | escape
-                }}
+                <img src="{{ staff.profile_photo | image_url: width: 120 }}" class="mmm-sd__avatar" alt="{{ staff.name | escape }}">
               </a>
             {%- endif -%}
 
@@ -295,9 +281,9 @@
               <div class="mmm-sd__name-row">
                 <a href="{{ staff_page_url }}" class="mmm-sd__name">{{ staff.name }}</a>
 
-                {%- if staff.instagram_url.url != blank -%}
+                {%- if staff.instagram_url.value != blank -%}
                   <a
-                    href="{{ staff.instagram_url.url }}"
+                    href="{{ staff.instagram_url.value }}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="mmm-sd__ig"
@@ -327,11 +313,7 @@
               {%- for prod in related -%}
                 <a href="{{ prod.url }}" class="mmm-sd__product">
                   {%- if prod.featured_image != blank -%}
-                    {{ prod.featured_image | image_url: width: 160 | image_tag:
-                      class: 'mmm-sd__product-thumb',
-                      loading: 'lazy',
-                      alt: prod.title | escape
-                    }}
+                    <img src="{{ prod.featured_image | image_url: width: 160 }}" class="mmm-sd__product-thumb" loading="lazy" alt="{{ prod.title | escape }}">
                   {%- endif -%}
                   <div class="mmm-sd__product-info">
                     {%- if prod.vendor != blank -%}
