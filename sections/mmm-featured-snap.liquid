@@ -1,8 +1,13 @@
 {%- liquid
-  assign all_snaps = shop.metaobjects.staffsnap.values
-  assign sorted_snaps = all_snaps | sort: 'post_date' | reverse
-  assign display_count = section.settings.snap_count | default: 4
-  assign featured_snaps = sorted_snaps | slice: 0, display_count
+  assign raw_snaps    = shop.metaobjects.staffsnap.values
+  assign sorted_snaps = raw_snaps | sort: 'post_date' | reverse
+  if sorted_snaps.size > 0
+    assign all_snaps = sorted_snaps
+  else
+    assign all_snaps = raw_snaps
+  endif
+  assign display_count   = section.settings.snap_count | default: 4
+  assign featured_snaps  = all_snaps | slice: 0, display_count
 -%}
 
 {%- style -%}
