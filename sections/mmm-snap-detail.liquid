@@ -238,17 +238,13 @@
 {%- endstyle -%}
 
 <div class="mmm-sd">
-  <p style="color:red;font-size:18px;font-weight:bold;">🔴 DEBUG snap-detail: snap={{ snap.system.handle | default: 'blank/nil' }} / snap_images.size={{ snap_images | size | default: '0' }} / first_img={{ first_img | default: 'blank' }} / staff={{ staff.name | default: 'blank/nil' }}</p>
-
   {%- if snap != blank -%}
-    <p style="color:red;">🔴 DEBUG: snap != blank → コンテンツ表示へ進む</p>
     <div class="mmm-sd__container">
 
       {%- comment -%}── 左カラム: ギャラリー ──{%- endcomment -%}
       <div class="mmm-sd__image-col">
         <div class="mmm-sd__main-wrap">
           {%- if first_img != blank -%}
-            <p style="color:red;">🔴 DEBUG: first_img あり → メイン画像表示</p>
             {{ first_img | image_url: width: 1200 | image_tag:
               loading: 'eager',
               id: 'MmmSdMainImg',
@@ -256,13 +252,11 @@
               alt: snap.comment | escape
             }}
           {%- else -%}
-            <p style="color:red;">🔴 DEBUG: first_img が blank → プレースホルダー表示（snap_images={{ snap_images | default: 'nil' }}）</p>
             {{ 'image' | placeholder_svg_tag: 'mmm-sd__main-img' }}
           {%- endif -%}
         </div>
 
         {%- assign images_count = snap_images | size -%}
-        <p style="color:red;">🔴 DEBUG: images_count={{ images_count }}</p>
         {%- if images_count > 1 -%}
           <div class="mmm-sd__thumbs" id="MmmSdThumbs">
             {%- for img in snap_images -%}
@@ -288,7 +282,6 @@
       <div class="mmm-sd__info">
 
         {%- if staff != blank -%}
-          <p style="color:red;">🔴 DEBUG: staff != blank → プロフィール表示へ（name={{ staff.name | default: 'なし' }} / height={{ staff.height | default: 'なし' }} / ig={{ staff.instagram_url.url | default: 'なし' }}）</p>
           <div class="mmm-sd__profile">
             {%- if staff.profile_photo != blank -%}
               <a href="{{ staff_page_url }}" aria-label="{{ staff.name | escape }}のページ" tabindex="-1" aria-hidden="true">
@@ -361,7 +354,6 @@
       </div>
     </div>
   {%- else -%}
-    <p style="color:red;font-size:18px;">🔴 DEBUG: snap == blank のためコンテンツ非表示（metaobject={{ metaobject | default: 'nil' }}）</p>
     <div style="text-align:center; padding:100px 32px;">
       <p>スナップデータが見つかりませんでした。</p>
     </div>

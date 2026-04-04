@@ -125,8 +125,6 @@
       <h2 class="mmm-sl__heading">{{ section.settings.heading }}</h2>
     {%- endif -%}
 
-    <p style="color:red;font-size:18px;font-weight:bold;">🔴 DEBUG snap-list: raw={{ raw_snaps.size | default: 'nil' }} / sorted={{ sorted_snaps.size | default: 'nil' }} / all={{ all_snaps.size | default: 'nil' }} / displayed={{ displayed_snaps.size | default: 'nil' }} / staff={{ all_staff.size | default: 'nil' }}</p>
-
     {%- if all_staff.size > 0 -%}
       <nav class="mmm-sl__staff-nav" aria-label="スタッフ一覧">
         {%- for member in all_staff -%}
@@ -149,10 +147,9 @@
     {%- endif -%}
 
     {%- if displayed_snaps.size > 0 -%}
-      <p style="color:red;">🔴 DEBUG: グリッドループ開始（{{ displayed_snaps.size }}件）</p>
       <div class="mmm-sl__grid">
         {%- for snap in displayed_snaps -%}
-          <p style="color:red;">🔴 DEBUG snap[{{ forloop.index }}]: handle={{ snap.system.handle }} / staff={{ snap.staff_ref.value.name | default: 'なし' }} / snap_image.size={{ snap.snap_image.value.size | default: '0' }}</p>
+          {%- if snap.snap_image.value == blank -%}{%- continue -%}{%- endif -%}
           <a href="{{ snap.system.url }}" class="mmm-sl__item">
             <div class="mmm-sl__item-img-wrap">
               {%- liquid
@@ -171,7 +168,6 @@
                   alt: snap.staff_ref.value.name | escape
                 }}
               {%- else -%}
-                <p style="color:red;">🔴 DEBUG: target が blank → プレースホルダー</p>
                 {{ 'image' | placeholder_svg_tag: 'mmm-sl__item-img' }}
               {%- endif -%}
             </div>
@@ -189,7 +185,6 @@
         {%- endfor -%}
       </div>
     {%- else -%}
-      <p style="color:red;font-size:18px;">🔴 DEBUG: displayed_snaps.size == 0 のためグリッド非表示（raw={{ raw_snaps.size | default: 'nil' }}）</p>
       <div style="text-align:center; padding:60px 0;">
         <p>{{ section.settings.empty_message }}</p>
       </div>

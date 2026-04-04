@@ -263,9 +263,8 @@
         <p class="mmm-sp__grid-heading">Snaps — {{ snap_count }}</p>
         <div class="mmm-sp__grid">
           {%- for snap in all_snaps -%}
-            {%- unless snap.staff_ref.value.name == staff.name -%}
-              {%- continue -%}
-            {%- endunless -%}
+            {%- unless snap.staff_ref.value.name == staff.name -%}{%- continue -%}{%- endunless -%}
+            {%- if snap.snap_image.value == blank -%}{%- continue -%}{%- endif -%}
 
             <a href="{{ snap.system.url }}" class="mmm-sp__snap">
               <div class="mmm-sp__snap-img-wrap">
