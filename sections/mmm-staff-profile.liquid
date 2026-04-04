@@ -226,11 +226,7 @@
                 class="mmm-sp__ig"
                 aria-label="{{ staff.name | escape }}のInstagram"
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                </svg>
+                <img src="{{ 'Instagram_Glyph_Black.svg' | asset_url }}" alt="Instagram" width="20" height="20">
               </a>
             {%- endif -%}
           </div>
@@ -269,13 +265,9 @@
             <a href="{{ snap.system.url }}" class="mmm-sp__snap">
               <div class="mmm-sp__snap-img-wrap">
                 {%- liquid
-                  assign thumb  = snap.thumbnail_image.value
-                  assign main   = snap.snap_image.value
-                  assign target = thumb | default: main
-                  for img in target
-                    assign target = img
-                    break
-                  endfor
+                  assign thumb      = snap.thumbnail_image.value
+                  assign first_main = snap.snap_image.value | first
+                  assign target     = thumb | default: first_main
                 -%}
                 {%- if target != blank -%}
                   {{ target | image_url: width: 600 | image_tag:
