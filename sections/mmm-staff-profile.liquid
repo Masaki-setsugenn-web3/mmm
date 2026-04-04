@@ -215,9 +215,9 @@
         <div class="mmm-sp__profile-body">
           <div class="mmm-sp__name-row">
             <h1 class="mmm-sp__name">{{ staff.name }}</h1>
-            {%- if staff.instagram_url.value != blank -%}
+            {%- if staff.instagram_url.value.url != blank -%}
               <a
-                href="{{ staff.instagram_url.value }}"
+                href="{{ staff.instagram_url.value.url }}"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mmm-sp__ig"

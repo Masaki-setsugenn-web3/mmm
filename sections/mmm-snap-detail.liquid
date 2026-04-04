@@ -281,9 +281,9 @@
               <div class="mmm-sd__name-row">
                 <a href="{{ staff_page_url }}" class="mmm-sd__name">{{ staff.name }}</a>
 
-                {%- if staff.instagram_url.value != blank -%}
+                {%- if staff.instagram_url.value.url != blank -%}
                   <a
-                    href="{{ staff.instagram_url.value }}"
+                    href="{{ staff.instagram_url.value.url }}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="mmm-sd__ig"
