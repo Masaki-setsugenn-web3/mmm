@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "mmm-vintage-collection",
+      "settings": {
+        "eyebrow": "Archive",
+        "show_description": true,
+        "columns_desktop": 3,
+        "columns_mobile": "2",
+        "per_page": 24,
+        "show_brand_filter": true,
+        "filter_all_label": "All",
+        "cta_label": "View Details",
+        "empty_label": "No items found."
+      }
+    }
+  },
+  "order": ["main"]
+}

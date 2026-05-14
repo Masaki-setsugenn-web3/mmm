@@ -1,0 +1,799 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign images = product.images
+-%}
+
+{%- comment -%} Image URL data island for JS {%- endcomment -%}
+<script type="application/json" id="mmm-vp-images-data">
+[{% for image in images %}{"src":"{{ image | image_url: width: 1200 }}","thumb":"{{ image | image_url: width: 200 }}","alt":{{ image.alt | default: product.title | json }}}{% unless forloop.last %},{% endunless %}{% endfor %}]
+</script>
+
+{%- comment -%} Sticky purchase bar {%- endcomment -%}
+<div class="mmm-vp-bar" id="mmm-vp-bar" role="banner">
+  <div class="mmm-vp-bar__inner page-width">
+    <div class="mmm-vp-bar__meta">
+      <span class="mmm-vp-bar__vendor">{{ product.vendor }}</span>
+      <span class="mmm-vp-bar__title">{{ product.title }}</span>
+    </div>
+    <div class="mmm-vp-bar__actions">
+      <span class="mmm-vp-bar__price">{{ current_variant.price | money }}</span>
+      <button class="mmm-vp-bar__btn" data-vp-bar-cart>
+        {{- section.settings.bar_button_label -}}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="mmm-vp-layout page-width" id="mmm-vp-layout">
+
+  {%- comment -%} Gallery {%- endcomment -%}
+  <div class="mmm-vp-gallery" id="mmm-vp-gallery">
+
+    <div class="mmm-vp-gallery__stage" id="mmm-vp-stage">
+      <img
+        id="mmm-vp-main-img"
+        src="{{ images[0] | image_url: width: 1200 }}"
+        alt="{{ images[0].alt | default: product.title | escape }}"
+        width="800"
+        height="1200"
+        loading="eager"
+      >
+
+      {%- if images.size > 1 -%}
+        <button class="mmm-vp-gallery__nav mmm-vp-gallery__prev" data-vp-prev aria-label="前の写真">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <button class="mmm-vp-gallery__nav mmm-vp-gallery__next" data-vp-next aria-label="次の写真">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+      {%- endif -%}
+
+      <button class="mmm-vp-gallery__expand" data-vp-expand aria-label="拡大表示">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </button>
+
+      <span class="mmm-vp-gallery__counter" aria-live="polite">
+        <span id="mmm-vp-cur">1</span> / {{ images.size }}
+      </span>
+    </div>
+
+    {%- if images.size > 1 -%}
+      <div class="mmm-vp-gallery__thumbs" id="mmm-vp-thumbs" role="list" aria-label="写真一覧">
+        {%- for image in images -%}
+          <button
+            class="mmm-vp-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+            data-vp-thumb="{{ forloop.index0 }}"
+            role="listitem"
+            aria-label="写真 {{ forloop.index }}"
+            {% if forloop.first %}aria-current="true"{% endif %}
+          >
+            <img
+              src="{{ image | image_url: width: 200 }}"
+              alt="{{ image.alt | default: product.title | escape }}"
+              width="60"
+              height="90"
+              loading="lazy"
+            >
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Product info + description {%- endcomment -%}
+  <div class="mmm-vp-info">
+
+    <header class="mmm-vp-header">
+      {%- if product.vendor != blank -%}
+        <p class="mmm-vp-header__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+      <h1 class="mmm-vp-header__title">{{ product.title }}</h1>
+      <p class="mmm-vp-header__price" id="mmm-vp-price">{{ current_variant.price | money }}</p>
+    </header>
+
+    {%- form 'product', product, id: 'mmm-vp-form', novalidate: 'novalidate' -%}
+      <input type="hidden" name="id" id="mmm-vp-variant-id" value="{{ current_variant.id }}">
+
+      {%- unless product.has_only_default_variant -%}
+        <div class="mmm-vp-variants">
+          {%- for option in product.options_with_values -%}
+            <div class="mmm-vp-option">
+              <label class="mmm-vp-option__label" for="mmm-vp-opt-{{ forloop.index }}">
+                {{ option.name }}
+              </label>
+              <select
+                class="mmm-vp-option__select"
+                id="mmm-vp-opt-{{ forloop.index }}"
+                name="options[{{ option.name | escape }}]"
+                data-vp-option="{{ forloop.index0 }}"
+              >
+                {%- for value in option.values -%}
+                  <option
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value %}selected{% endif %}
+                  >{{ value }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endunless -%}
+
+      <button
+        type="submit"
+        class="mmm-vp-cart-btn"
+        id="mmm-vp-main-btn"
+        {% if current_variant.available == false %}disabled{% endif %}
+      >
+        {%- if current_variant.available -%}
+          {{ section.settings.add_to_cart_label }}
+        {%- else -%}
+          {{ 'products.product.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    {%- endform -%}
+
+    {%- if product.description != blank -%}
+      <div class="mmm-vp-description">
+        {{ product.description }}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_tags and product.tags.size > 0 -%}
+      <div class="mmm-vp-tags">
+        {%- for tag in product.tags -%}
+          <span class="mmm-vp-tag">{{ tag }}</span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="mmm-vp-back">
+      <a href="/collections/{{ section.settings.collection_handle }}" class="mmm-vp-back__link">
+        ← {{ section.settings.back_label }}
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{%- comment -%} Lightbox {%- endcomment -%}
+<div class="mmm-vp-lightbox" id="mmm-vp-lightbox" role="dialog" aria-modal="true" aria-label="写真拡大表示" hidden>
+  <button class="mmm-vp-lightbox__close" data-vp-lb-close aria-label="閉じる">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="mmm-vp-lightbox__nav mmm-vp-lightbox__prev" data-vp-lb-prev aria-label="前の写真">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg>
+  </button>
+  <div class="mmm-vp-lightbox__img-wrap">
+    <img id="mmm-vp-lb-img" src="" alt="" width="1200" height="1800" loading="lazy">
+  </div>
+  <button class="mmm-vp-lightbox__nav mmm-vp-lightbox__next" data-vp-lb-next aria-label="次の写真">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>
+  </button>
+  <span class="mmm-vp-lightbox__counter">
+    <span id="mmm-vp-lb-cur">1</span> / {{ images.size }}
+  </span>
+</div>
+
+{% style %}
+/* ============================================================
+   SP FIRST — base styles = mobile
+   Desktop overrides inside @media (min-width: 990px)
+   ============================================================ */
+
+/* ── Sticky bar ── */
+.mmm-vp-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgb(var(--color-base-background-1));
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+  padding: 10px 0;
+  transition: box-shadow 0.25s ease;
+}
+.mmm-vp-bar.is-scrolled { box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+
+.mmm-vp-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* SP: vendor/title hidden to save space */
+.mmm-vp-bar__meta { display: none; }
+
+.mmm-vp-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+.mmm-vp-bar__price {
+  font-size: 0.875rem;
+  color: rgb(var(--color-base-text));
+}
+.mmm-vp-bar__btn {
+  background: rgb(var(--color-base-text));
+  color: rgb(var(--color-base-background-1));
+  border: none;
+  padding: 9px 18px;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mmm-vp-bar__btn:hover { opacity: 0.75; }
+
+/* ── Layout: SP = single column ── */
+.mmm-vp-layout {
+  display: block;
+  padding-bottom: 60px;
+}
+
+/* ── Gallery: SP = natural flow, no sticky ── */
+.mmm-vp-gallery {
+  margin-bottom: 0;
+}
+
+.mmm-vp-gallery__stage {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: rgba(var(--color-base-text), 0.03);
+}
+.mmm-vp-gallery__stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+.mmm-vp-gallery__stage img.is-loading { opacity: 0.4; }
+
+/* Nav arrows: always visible on SP */
+.mmm-vp-gallery__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(var(--color-base-background-1), 0.9);
+  color: rgb(var(--color-base-text));
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.mmm-vp-gallery__prev { left: 10px; }
+.mmm-vp-gallery__next { right: 10px; }
+
+/* Expand button: always visible on SP */
+.mmm-vp-gallery__expand {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(var(--color-base-background-1), 0.85);
+  color: rgb(var(--color-base-text));
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mmm-vp-gallery__counter {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  background: rgba(var(--color-base-background-1), 0.85);
+  color: rgb(var(--color-base-text));
+  padding: 4px 9px;
+  pointer-events: none;
+}
+
+/* Thumbnail strip */
+.mmm-vp-gallery__thumbs {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 0 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--color-base-text), 0.2) transparent;
+}
+.mmm-vp-gallery__thumbs::-webkit-scrollbar { height: 3px; }
+.mmm-vp-gallery__thumbs::-webkit-scrollbar-track { background: transparent; }
+.mmm-vp-gallery__thumbs::-webkit-scrollbar-thumb { background: rgba(var(--color-base-text), 0.2); }
+
+.mmm-vp-gallery__thumb {
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.mmm-vp-gallery__thumb.is-active { border-color: rgb(var(--color-base-text)); }
+.mmm-vp-gallery__thumb:hover:not(.is-active) { border-color: rgba(var(--color-base-text), 0.35); }
+.mmm-vp-gallery__thumb img {
+  display: block;
+  width: 48px;
+  height: 72px;
+  object-fit: cover;
+}
+
+/* ── Info column ── */
+.mmm-vp-info { padding: 24px 0 40px; }
+
+.mmm-vp-header { margin-bottom: 24px; }
+.mmm-vp-header__vendor {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.45);
+  margin: 0 0 8px;
+}
+.mmm-vp-header__title {
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: rgb(var(--color-base-text));
+  margin: 0 0 12px;
+}
+.mmm-vp-header__price {
+  font-size: 1rem;
+  color: rgb(var(--color-base-text));
+  margin: 0;
+}
+
+/* Variants */
+.mmm-vp-variants { margin-bottom: 16px; }
+.mmm-vp-option { margin-bottom: 14px; }
+.mmm-vp-option__label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.55);
+  margin-bottom: 7px;
+}
+.mmm-vp-option__select {
+  width: 100%;
+  padding: 13px 36px 13px 14px;
+  border: 1px solid rgba(var(--color-base-text), 0.25);
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='1.5'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color: rgb(var(--color-base-text));
+  font-size: 1rem; /* 16px min to prevent iOS zoom */
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  border-radius: 0;
+}
+.mmm-vp-option__select:focus {
+  outline: 2px solid rgb(var(--color-base-text));
+  outline-offset: 1px;
+}
+
+/* Cart button */
+.mmm-vp-cart-btn {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  background: rgb(var(--color-base-text));
+  color: rgb(var(--color-base-background-1));
+  border: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: 32px;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+.mmm-vp-cart-btn:hover:not(:disabled) { opacity: 0.75; }
+.mmm-vp-cart-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Description */
+.mmm-vp-description {
+  font-size: 0.9375rem;
+  line-height: 1.95;
+  color: rgb(var(--color-base-text));
+  border-top: 1px solid rgba(var(--color-base-text), 0.1);
+  padding-top: 28px;
+}
+.mmm-vp-description h2,
+.mmm-vp-description h3,
+.mmm-vp-description h4 {
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.45);
+  margin: 36px 0 12px;
+}
+.mmm-vp-description h2:first-child,
+.mmm-vp-description h3:first-child { margin-top: 0; }
+.mmm-vp-description p { margin: 0 0 1.6em; }
+.mmm-vp-description strong { font-weight: 500; }
+.mmm-vp-description hr {
+  border: none;
+  border-top: 1px solid rgba(var(--color-base-text), 0.1);
+  margin: 32px 0;
+}
+.mmm-vp-description ul,
+.mmm-vp-description ol { padding-left: 1.4em; margin: 0 0 1.6em; }
+.mmm-vp-description li { margin-bottom: 0.5em; }
+
+/* Tags */
+.mmm-vp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(var(--color-base-text), 0.1);
+}
+.mmm-vp-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid rgba(var(--color-base-text), 0.2);
+  padding: 4px 10px;
+  color: rgba(var(--color-base-text), 0.55);
+}
+
+/* Back link */
+.mmm-vp-back {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(var(--color-base-text), 0.1);
+}
+.mmm-vp-back__link {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.5);
+  text-decoration: none;
+}
+.mmm-vp-back__link:hover { color: rgb(var(--color-base-text)); }
+
+/* ── Lightbox ── */
+.mmm-vp-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0,0,0,0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mmm-vp-lightbox[hidden] { display: none; }
+
+.mmm-vp-lightbox__img-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 12px 48px;
+}
+.mmm-vp-lightbox__img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.mmm-vp-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  padding: 10px;
+  z-index: 1;
+  /* larger tap target on SP */
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mmm-vp-lightbox__close:hover { color: #fff; }
+
+.mmm-vp-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  padding: 16px 10px;
+  z-index: 1;
+  min-width: 52px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mmm-vp-lightbox__nav:hover { color: #fff; }
+.mmm-vp-lightbox__prev { left: 0; }
+.mmm-vp-lightbox__next { right: 0; }
+
+.mmm-vp-lightbox__counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ============================================================
+   DESKTOP — 2-column sticky layout
+   ============================================================ */
+@media screen and (min-width: 990px) {
+
+  .mmm-vp-bar__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+  .mmm-vp-bar__vendor {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(var(--color-base-text), 0.5);
+    white-space: nowrap;
+  }
+  .mmm-vp-bar__title {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: rgb(var(--color-base-text));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mmm-vp-bar__actions { gap: 20px; }
+
+  .mmm-vp-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 56px;
+    align-items: start;
+    padding-bottom: 80px;
+  }
+
+  .mmm-vp-gallery {
+    position: sticky;
+    top: 52px; /* adjusted by JS to actual bar height */
+    height: calc(100vh - 52px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .mmm-vp-gallery__stage {
+    aspect-ratio: unset;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Arrows: hidden until hover on desktop */
+  .mmm-vp-gallery__nav {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .mmm-vp-gallery__stage:hover .mmm-vp-gallery__nav { opacity: 0.92; }
+  .mmm-vp-gallery__nav:hover { opacity: 1 !important; }
+
+  .mmm-vp-gallery__expand {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .mmm-vp-gallery__stage:hover .mmm-vp-gallery__expand { opacity: 0.85; }
+  .mmm-vp-gallery__expand:hover { opacity: 1 !important; }
+
+  .mmm-vp-info {
+    padding-top: 32px;
+  }
+  .mmm-vp-header__title { font-size: 1.4rem; }
+
+  .mmm-vp-lightbox__img-wrap { padding: 60px 80px; }
+}
+
+/* ============================================================
+   Motion preference
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .mmm-vp-gallery__stage img,
+  .mmm-vp-gallery__nav,
+  .mmm-vp-gallery__expand { transition: none; }
+}
+{% endstyle %}
+
+{% javascript %}
+(function () {
+  'use strict';
+
+  var dataEl = document.getElementById('mmm-vp-images-data');
+  if (!dataEl) return;
+
+  var images = JSON.parse(dataEl.textContent);
+  var total = images.length;
+  var current = 0;
+
+  var mainImg = document.getElementById('mmm-vp-main-img');
+  var curEl   = document.getElementById('mmm-vp-cur');
+  var thumbs  = document.querySelectorAll('[data-vp-thumb]');
+  var gallery = document.getElementById('mmm-vp-gallery');
+  var bar     = document.getElementById('mmm-vp-bar');
+
+  var lightbox = document.getElementById('mmm-vp-lightbox');
+  var lbImg    = document.getElementById('mmm-vp-lb-img');
+  var lbCur    = document.getElementById('mmm-vp-lb-cur');
+  var lbOpen   = false;
+
+  /* Adjust sticky gallery top to actual bar height (desktop only) */
+  function adjustGallery() {
+    if (!gallery || !bar || window.innerWidth < 990) return;
+    var h = bar.offsetHeight;
+    gallery.style.top = h + 'px';
+    gallery.style.height = 'calc(100vh - ' + h + 'px)';
+  }
+  adjustGallery();
+  window.addEventListener('resize', adjustGallery, { passive: true });
+
+  /* Navigate */
+  function goTo(index) {
+    if (total === 0) return;
+    if (index < 0) index = total - 1;
+    if (index >= total) index = 0;
+    current = index;
+
+    var img = images[index];
+    mainImg.classList.add('is-loading');
+    mainImg.src = img.src;
+    mainImg.alt = img.alt;
+    mainImg.onload = function () { mainImg.classList.remove('is-loading'); };
+
+    if (curEl) curEl.textContent = index + 1;
+
+    thumbs.forEach(function (t, i) {
+      var active = i === index;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-current', active ? 'true' : 'false');
+      if (active) t.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
+    });
+
+    if (lbOpen) updateLightbox(index);
+  }
+
+  /* Lightbox */
+  function openLightbox(index) {
+    lbOpen = true;
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    updateLightbox(index);
+  }
+  function closeLightbox() {
+    lbOpen = false;
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+  }
+  function updateLightbox(index) {
+    var img = images[index];
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    if (lbCur) lbCur.textContent = index + 1;
+  }
+
+  /* Click delegation */
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-vp-prev]'))     goTo(current - 1);
+    if (e.target.closest('[data-vp-next]'))     goTo(current + 1);
+    if (e.target.closest('[data-vp-lb-prev]'))  goTo(current - 1);
+    if (e.target.closest('[data-vp-lb-next]'))  goTo(current + 1);
+    if (e.target.closest('[data-vp-lb-close]')) closeLightbox();
+    if (e.target === lightbox)                  closeLightbox();
+    if (e.target.closest('[data-vp-expand]'))   openLightbox(current);
+
+    var thumb = e.target.closest('[data-vp-thumb]');
+    if (thumb) goTo(parseInt(thumb.dataset.vpThumb, 10));
+
+    /* Stage click → lightbox (not when clicking nav/expand) */
+    var stage = e.target.closest('.mmm-vp-gallery__stage');
+    if (stage && !e.target.closest('[data-vp-prev],[data-vp-next],[data-vp-expand]')) {
+      openLightbox(current);
+    }
+
+    /* Sticky bar cart → submit main form */
+    if (e.target.closest('[data-vp-bar-cart]')) {
+      var form = document.getElementById('mmm-vp-form');
+      if (form) form.requestSubmit ? form.requestSubmit() : form.submit();
+    }
+  });
+
+  /* Keyboard */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'Escape' && lbOpen) closeLightbox();
+  });
+
+  /* Scroll → sticky bar shadow */
+  window.addEventListener('scroll', function () {
+    if (bar) bar.classList.toggle('is-scrolled', window.scrollY > 4);
+  }, { passive: true });
+
+  /* Touch swipe on stage */
+  var touchStartX = 0;
+  var stage = document.getElementById('mmm-vp-stage');
+  if (stage) {
+    stage.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+    }, { passive: true });
+  }
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Vintage Archive — 商品",
+  "settings": [
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "カートボタンのテキスト",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "text",
+      "id": "bar_button_label",
+      "label": "スティッキーバーのボタンテキスト",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "text",
+      "id": "back_label",
+      "label": "コレクションへの戻るリンクのテキスト",
+      "default": "Back to Archive"
+    },
+    {
+      "type": "text",
+      "id": "collection_handle",
+      "label": "戻り先コレクションのハンドル",
+      "default": "vintage-archive"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "タグを表示",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vintage Archive — 商品"
+    }
+  ]
+}
+{% endschema %}

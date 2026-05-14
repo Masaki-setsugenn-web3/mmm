@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "mmm-vintage-product",
+      "settings": {
+        "add_to_cart_label": "Add to Cart",
+        "bar_button_label": "Add to Cart",
+        "back_label": "Back to Archive",
+        "collection_handle": "vintage-archive",
+        "show_tags": true
+      }
+    }
+  },
+  "order": ["main"]
+}

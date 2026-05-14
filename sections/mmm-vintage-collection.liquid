@@ -1,0 +1,479 @@
+{%- liquid
+  assign columns    = section.settings.columns_desktop | default: 3
+  assign col_mobile = section.settings.columns_mobile  | default: 2
+  assign per_page   = section.settings.per_page        | default: 24
+-%}
+
+<div class="mmm-vc-page">
+
+  {%- comment -%} Collection header {%- endcomment -%}
+  <div class="mmm-vc-header page-width">
+    <p class="mmm-vc-header__eyebrow">{{ section.settings.eyebrow | default: 'Archive' }}</p>
+    <h1 class="mmm-vc-header__title">
+      {%- if section.settings.custom_title != blank -%}
+        {{ section.settings.custom_title }}
+      {%- else -%}
+        {{ collection.title }}
+      {%- endif -%}
+    </h1>
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="mmm-vc-header__desc">{{ collection.description }}</div>
+    {%- endif -%}
+    <p class="mmm-vc-header__count">{{ collection.products_count }} items</p>
+  </div>
+
+  {%- comment -%} Brand filter {%- endcomment -%}
+  {%- if section.settings.show_brand_filter -%}
+    {%- assign all_vendors = collection.all_vendors -%}
+    {%- if all_vendors.size > 0 -%}
+      <nav class="mmm-vc-filter page-width" aria-label="ブランドで絞り込む">
+        <div class="mmm-vc-filter__scroll">
+          <button class="mmm-vc-filter__btn is-active" data-vc-filter="">
+            {{ section.settings.filter_all_label | default: 'All' }}
+          </button>
+          {%- for vendor in all_vendors -%}
+            <button class="mmm-vc-filter__btn" data-vc-filter="{{ vendor | escape }}">
+              {{ vendor }}
+            </button>
+          {%- endfor -%}
+        </div>
+      </nav>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} Product grid {%- endcomment -%}
+  {%- paginate collection.products by per_page -%}
+    <div
+      class="mmm-vc-grid page-width"
+      id="mmm-vc-grid"
+      style="--mmm-vc-cols: {{ columns }}; --mmm-vc-cols-m: {{ col_mobile }};"
+    >
+      {%- for product in collection.products -%}
+        <article class="mmm-vc-card" data-vendor="{{ product.vendor | escape }}">
+          <a
+            class="mmm-vc-card__link"
+            href="{{ product.url }}?variant={{ product.first_available_variant.id }}"
+            aria-label="{{ product.title | escape }}"
+          >
+            <div class="mmm-vc-card__img-wrap">
+              {%- if product.featured_image != blank -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 800 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  width="800"
+                  height="1200"
+                  loading="lazy"
+                  class="mmm-vc-card__img"
+                >
+                {%- if product.images.size > 1 -%}
+                  <img
+                    src="{{ product.images[1] | image_url: width: 800 }}"
+                    alt="{{ product.images[1].alt | default: product.title | escape }}"
+                    width="800"
+                    height="1200"
+                    loading="lazy"
+                    class="mmm-vc-card__img mmm-vc-card__img--hover"
+                  >
+                {%- endif -%}
+              {%- else -%}
+                <div class="mmm-vc-card__no-img">No image</div>
+              {%- endif -%}
+
+              {%- unless product.available -%}
+                <span class="mmm-vc-card__badge">Sold Out</span>
+              {%- endunless -%}
+            </div>
+
+            <div class="mmm-vc-card__meta">
+              {%- if product.vendor != blank -%}
+                <p class="mmm-vc-card__vendor">{{ product.vendor }}</p>
+              {%- endif -%}
+              <h2 class="mmm-vc-card__title">{{ product.title }}</h2>
+              <p class="mmm-vc-card__price">
+                {%- if product.price_varies -%}
+                  From {{ product.price_min | money }}
+                {%- else -%}
+                  {{ product.price | money }}
+                {%- endif -%}
+              </p>
+            </div>
+          </a>
+        </article>
+      {%- else -%}
+        <p class="mmm-vc-empty">{{ section.settings.empty_label | default: 'No items found.' }}</p>
+      {%- endfor -%}
+    </div>
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="mmm-vc-pagination page-width" aria-label="ページナビゲーション">
+        {%- if paginate.previous -%}
+          <a class="mmm-vc-pagination__btn" href="{{ paginate.previous.url }}">← Prev</a>
+        {%- endif -%}
+        <span class="mmm-vc-pagination__info">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+        {%- if paginate.next -%}
+          <a class="mmm-vc-pagination__btn" href="{{ paginate.next.url }}">Next →</a>
+        {%- endif -%}
+      </nav>
+    {%- endif -%}
+  {%- endpaginate -%}
+
+</div>
+
+{% style %}
+/* ============================================================
+   SP FIRST — base styles = mobile
+   Desktop overrides inside @media (min-width: 750px / 990px)
+   ============================================================ */
+
+.mmm-vc-page { padding-bottom: 60px; }
+
+/* ── Header ── */
+.mmm-vc-header {
+  text-align: center;
+  padding: 36px 0 28px;
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+  margin-bottom: 24px;
+}
+.mmm-vc-header__eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.4);
+  margin: 0 0 10px;
+}
+.mmm-vc-header__title {
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: rgb(var(--color-base-text));
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+.mmm-vc-header__desc {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: rgba(var(--color-base-text), 0.65);
+  margin: 0 auto 16px;
+}
+.mmm-vc-header__count {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.35);
+  margin: 0;
+}
+
+/* ── Brand filter: horizontal scroll on SP ── */
+.mmm-vc-filter {
+  margin-bottom: 20px;
+}
+.mmm-vc-filter__scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  /* hide scrollbar on SP */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mmm-vc-filter__scroll::-webkit-scrollbar { display: none; }
+
+.mmm-vc-filter__btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid rgba(var(--color-base-text), 0.2);
+  color: rgba(var(--color-base-text), 0.55);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Minimum tap target */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.mmm-vc-filter__btn.is-active,
+.mmm-vc-filter__btn:hover {
+  background: rgb(var(--color-base-text));
+  border-color: rgb(var(--color-base-text));
+  color: rgb(var(--color-base-background-1));
+}
+
+/* ── Grid: SP = 2 columns by default ── */
+.mmm-vc-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--mmm-vc-cols-m, 2), 1fr);
+  gap: 1px;
+}
+
+/* ── Card ── */
+.mmm-vc-card { position: relative; }
+.mmm-vc-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mmm-vc-card__img-wrap {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: rgba(var(--color-base-text), 0.04);
+}
+.mmm-vc-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Hover image: hidden on SP (no hover state) */
+.mmm-vc-card__img--hover { display: none; }
+
+.mmm-vc-card__no-img {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: rgba(var(--color-base-text), 0.3);
+}
+
+.mmm-vc-card__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: rgb(var(--color-base-background-1));
+  color: rgba(var(--color-base-text), 0.6);
+}
+
+.mmm-vc-card__meta {
+  padding: 10px 2px 20px;
+}
+.mmm-vc-card__vendor {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-base-text), 0.4);
+  margin: 0 0 4px;
+}
+.mmm-vc-card__title {
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: rgb(var(--color-base-text));
+  margin: 0 0 5px;
+}
+.mmm-vc-card__price {
+  font-size: 0.78rem;
+  color: rgb(var(--color-base-text));
+  margin: 0;
+}
+
+.mmm-vc-card[hidden] { display: none; }
+
+/* ── Empty ── */
+.mmm-vc-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: rgba(var(--color-base-text), 0.4);
+}
+
+/* ── Pagination ── */
+.mmm-vc-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 44px;
+}
+.mmm-vc-pagination__btn {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-base-text));
+  text-decoration: none;
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.3);
+  padding-bottom: 2px;
+  /* Tap target */
+  padding-top: 8px;
+}
+.mmm-vc-pagination__btn:hover { border-color: rgb(var(--color-base-text)); }
+.mmm-vc-pagination__info {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: rgba(var(--color-base-text), 0.4);
+}
+
+/* ============================================================
+   TABLET (750px+)
+   ============================================================ */
+@media screen and (min-width: 750px) {
+  .mmm-vc-header { padding: 48px 0 36px; margin-bottom: 32px; }
+  .mmm-vc-header__title { font-size: 2rem; }
+  .mmm-vc-header__desc { max-width: 520px; }
+
+  .mmm-vc-filter { margin-bottom: 28px; }
+  .mmm-vc-filter__scroll {
+    flex-wrap: wrap;
+    overflow-x: unset;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   DESKTOP (990px+)
+   ============================================================ */
+@media screen and (min-width: 990px) {
+  .mmm-vc-page { padding-bottom: 80px; }
+
+  .mmm-vc-header { padding: 56px 0 44px; }
+  .mmm-vc-header__title { font-size: clamp(1.8rem, 3vw, 2.8rem); }
+
+  /* Desktop grid: use --mmm-vc-cols */
+  .mmm-vc-grid {
+    grid-template-columns: repeat(var(--mmm-vc-cols, 3), 1fr);
+    gap: 2px;
+  }
+
+  .mmm-vc-card__img--hover {
+    display: block;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .mmm-vc-card__img {
+    transition: transform 0.5s ease;
+  }
+  .mmm-vc-card:hover .mmm-vc-card__img:not(.mmm-vc-card__img--hover) {
+    transform: scale(1.03);
+  }
+  .mmm-vc-card:hover .mmm-vc-card__img--hover {
+    opacity: 1;
+  }
+
+  .mmm-vc-card__meta { padding: 12px 4px 24px; }
+  .mmm-vc-card__vendor { font-size: 0.58rem; }
+  .mmm-vc-card__title { font-size: 0.8rem; }
+  .mmm-vc-card__badge { top: 12px; left: 12px; }
+}
+
+/* ============================================================
+   Motion preference
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .mmm-vc-card__img,
+  .mmm-vc-card__img--hover { transition: none; }
+}
+{% endstyle %}
+
+{% javascript %}
+(function () {
+  'use strict';
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-vc-filter]');
+    if (!btn) return;
+
+    var vendor = btn.dataset.vcFilter;
+
+    document.querySelectorAll('[data-vc-filter]').forEach(function (b) {
+      b.classList.toggle('is-active', b === btn);
+    });
+
+    document.querySelectorAll('.mmm-vc-card').forEach(function (card) {
+      card.hidden = vendor !== '' && card.dataset.vendor !== vendor;
+    });
+  });
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Vintage Archive — コレクション",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "アイブロウテキスト（小さな上見出し）",
+      "default": "Archive"
+    },
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "カスタムタイトル（空白でコレクション名を使用）"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "コレクションの説明を表示",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "PC表示の列数",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "モバイル表示の列数",
+      "options": [
+        { "value": "1", "label": "1列" },
+        { "value": "2", "label": "2列" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "1ページの表示件数",
+      "min": 12,
+      "max": 48,
+      "step": 12,
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_brand_filter",
+      "label": "ブランドフィルターを表示",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "filter_all_label",
+      "label": "「全件」ボタンのテキスト",
+      "default": "All"
+    },
+    {
+      "type": "text",
+      "id": "empty_label",
+      "label": "商品なし時のテキスト",
+      "default": "No items found."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vintage Archive — コレクション"
+    }
+  ]
+}
+{% endschema %}
