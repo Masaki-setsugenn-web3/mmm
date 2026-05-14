@@ -4,35 +4,37 @@
   assign per_page   = section.settings.per_page        | default: 24
 -%}
 
-<div class="mmm-vc-page">
+<div class="mmm-vc-root">
 
-  {%- comment -%} Collection header {%- endcomment -%}
-  <div class="mmm-vc-header page-width">
-    <p class="mmm-vc-header__eyebrow">{{ section.settings.eyebrow | default: 'Archive' }}</p>
-    <h1 class="mmm-vc-header__title">
-      {%- if section.settings.custom_title != blank -%}
-        {{ section.settings.custom_title }}
-      {%- else -%}
-        {{ collection.title }}
+  {%- comment -%} Full-bleed inverted header {%- endcomment -%}
+  <div class="mmm-vc-masthead">
+    <div class="mmm-vc-masthead__inner page-width">
+      <p class="mmm-vc-masthead__eyebrow">{{ section.settings.eyebrow | default: 'Archive' }}</p>
+      <h1 class="mmm-vc-masthead__title">
+        {%- if section.settings.custom_title != blank -%}
+          {{ section.settings.custom_title }}
+        {%- else -%}
+          {{ collection.title }}
+        {%- endif -%}
+      </h1>
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <p class="mmm-vc-masthead__desc">{{ collection.description | strip_html | truncate: 180 }}</p>
       {%- endif -%}
-    </h1>
-    {%- if section.settings.show_description and collection.description != blank -%}
-      <div class="mmm-vc-header__desc">{{ collection.description }}</div>
-    {%- endif -%}
-    <p class="mmm-vc-header__count">{{ collection.products_count }} items</p>
+      <p class="mmm-vc-masthead__count">{{ collection.products_count }}&thinsp;pieces</p>
+    </div>
   </div>
 
-  {%- comment -%} Brand filter {%- endcomment -%}
+  {%- comment -%} Filter bar {%- endcomment -%}
   {%- if section.settings.show_brand_filter -%}
     {%- assign all_vendors = collection.all_vendors -%}
     {%- if all_vendors.size > 0 -%}
       <nav class="mmm-vc-filter page-width" aria-label="ブランドで絞り込む">
-        <div class="mmm-vc-filter__scroll">
-          <button class="mmm-vc-filter__btn is-active" data-vc-filter="">
+        <div class="mmm-vc-filter__row">
+          <button class="mmm-vc-filter__pill is-active" data-vc-filter="">
             {{ section.settings.filter_all_label | default: 'All' }}
           </button>
           {%- for vendor in all_vendors -%}
-            <button class="mmm-vc-filter__btn" data-vc-filter="{{ vendor | escape }}">
+            <button class="mmm-vc-filter__pill" data-vc-filter="{{ vendor | escape }}">
               {{ vendor }}
             </button>
           {%- endfor -%}
@@ -41,61 +43,59 @@
     {%- endif -%}
   {%- endif -%}
 
-  {%- comment -%} Product grid {%- endcomment -%}
+  {%- comment -%} Catalog grid {%- endcomment -%}
   {%- paginate collection.products by per_page -%}
     <div
-      class="mmm-vc-grid page-width"
+      class="mmm-vc-grid"
       id="mmm-vc-grid"
-      style="--mmm-vc-cols: {{ columns }}; --mmm-vc-cols-m: {{ col_mobile }};"
+      style="--cols: {{ columns }}; --cols-m: {{ col_mobile }};"
     >
       {%- for product in collection.products -%}
         <article class="mmm-vc-card" data-vendor="{{ product.vendor | escape }}">
           <a
-            class="mmm-vc-card__link"
+            class="mmm-vc-card__a"
             href="{{ product.url }}?variant={{ product.first_available_variant.id }}"
-            aria-label="{{ product.title | escape }}"
+            tabindex="0"
           >
-            <div class="mmm-vc-card__img-wrap">
+            {%- comment -%} Image {%- endcomment -%}
+            <div class="mmm-vc-card__fig">
               {%- if product.featured_image != blank -%}
                 <img
+                  class="mmm-vc-card__img mmm-vc-card__img--primary"
                   src="{{ product.featured_image | image_url: width: 800 }}"
                   alt="{{ product.featured_image.alt | default: product.title | escape }}"
-                  width="800"
-                  height="1200"
+                  width="800" height="1200"
                   loading="lazy"
-                  class="mmm-vc-card__img"
                 >
                 {%- if product.images.size > 1 -%}
                   <img
+                    class="mmm-vc-card__img mmm-vc-card__img--alt"
                     src="{{ product.images[1] | image_url: width: 800 }}"
                     alt="{{ product.images[1].alt | default: product.title | escape }}"
-                    width="800"
-                    height="1200"
+                    width="800" height="1200"
                     loading="lazy"
-                    class="mmm-vc-card__img mmm-vc-card__img--hover"
                   >
                 {%- endif -%}
               {%- else -%}
-                <div class="mmm-vc-card__no-img">No image</div>
+                <div class="mmm-vc-card__noimg">—</div>
               {%- endif -%}
 
               {%- unless product.available -%}
-                <span class="mmm-vc-card__badge">Sold Out</span>
+                <span class="mmm-vc-card__sold">Sold</span>
               {%- endunless -%}
+
+              {%- comment -%} Hover overlay {%- endcomment -%}
+              <div class="mmm-vc-card__veil" aria-hidden="true">
+                <span class="mmm-vc-card__veil-brand">{{ product.vendor }}</span>
+                <span class="mmm-vc-card__veil-title">{{ product.title }}</span>
+                <span class="mmm-vc-card__veil-price">{{ product.price | money }}</span>
+              </div>
             </div>
 
-            <div class="mmm-vc-card__meta">
-              {%- if product.vendor != blank -%}
-                <p class="mmm-vc-card__vendor">{{ product.vendor }}</p>
-              {%- endif -%}
-              <h2 class="mmm-vc-card__title">{{ product.title }}</h2>
-              <p class="mmm-vc-card__price">
-                {%- if product.price_varies -%}
-                  From {{ product.price_min | money }}
-                {%- else -%}
-                  {{ product.price | money }}
-                {%- endif -%}
-              </p>
+            {%- comment -%} Caption strip {%- endcomment -%}
+            <div class="mmm-vc-card__cap">
+              <span class="mmm-vc-card__cap-vendor">{{ product.vendor }}</span>
+              <span class="mmm-vc-card__cap-price">{{ product.price | money }}</span>
             </div>
           </a>
         </article>
@@ -105,13 +105,13 @@
     </div>
 
     {%- if paginate.pages > 1 -%}
-      <nav class="mmm-vc-pagination page-width" aria-label="ページナビゲーション">
+      <nav class="mmm-vc-pager page-width" aria-label="ページ">
         {%- if paginate.previous -%}
-          <a class="mmm-vc-pagination__btn" href="{{ paginate.previous.url }}">← Prev</a>
+          <a class="mmm-vc-pager__a" href="{{ paginate.previous.url }}">← Previous</a>
         {%- endif -%}
-        <span class="mmm-vc-pagination__info">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+        <span class="mmm-vc-pager__info">{{ paginate.current_page }} / {{ paginate.pages }}</span>
         {%- if paginate.next -%}
-          <a class="mmm-vc-pagination__btn" href="{{ paginate.next.url }}">Next →</a>
+          <a class="mmm-vc-pager__a" href="{{ paginate.next.url }}">Next →</a>
         {%- endif -%}
       </nav>
     {%- endif -%}
@@ -121,106 +121,128 @@
 
 {% style %}
 /* ============================================================
-   SP FIRST — base styles = mobile
-   Desktop overrides inside @media (min-width: 750px / 990px)
+   Vintage Archive — Collection  /  SP-first
    ============================================================ */
 
-.mmm-vc-page { padding-bottom: 60px; }
-
-/* ── Header ── */
-.mmm-vc-header {
-  text-align: center;
-  padding: 36px 0 28px;
-  border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
-  margin-bottom: 24px;
+/* ── Masthead (inverted) ── */
+.mmm-vc-masthead {
+  background: rgb(var(--color-base-text));
+  color: rgb(var(--color-base-background-1));
+  padding: 48px 0 36px;
 }
-.mmm-vc-header__eyebrow {
-  font-size: 0.6rem;
-  letter-spacing: 0.24em;
+.mmm-vc-masthead__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.mmm-vc-masthead__eyebrow {
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(var(--color-base-text), 0.4);
-  margin: 0 0 10px;
+  opacity: 0.45;
+  margin: 0 0 20px;
 }
-.mmm-vc-header__title {
-  font-size: 1.6rem;
+.mmm-vc-masthead__title {
+  font-size: clamp(2rem, 8vw, 4.5rem);
   font-weight: 300;
-  letter-spacing: 0.04em;
-  color: rgb(var(--color-base-text));
-  margin: 0 0 16px;
-  line-height: 1.25;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0 0 24px;
+  color: inherit;
 }
-.mmm-vc-header__desc {
-  font-size: 0.875rem;
-  line-height: 1.75;
-  color: rgba(var(--color-base-text), 0.65);
-  margin: 0 auto 16px;
+.mmm-vc-masthead__desc {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  opacity: 0.55;
+  margin: 0 0 20px;
+  max-width: 48ch;
 }
-.mmm-vc-header__count {
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
+.mmm-vc-masthead__count {
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(var(--color-base-text), 0.35);
+  opacity: 0.35;
   margin: 0;
 }
 
-/* ── Brand filter: horizontal scroll on SP ── */
+/* ── Filter bar ── */
 .mmm-vc-filter {
-  margin-bottom: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
 }
-.mmm-vc-filter__scroll {
+.mmm-vc-filter__row {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 0;
   overflow-x: auto;
-  padding: 4px 0 8px;
-  /* hide scrollbar on SP */
   scrollbar-width: none;
-  -ms-overflow-style: none;
 }
-.mmm-vc-filter__scroll::-webkit-scrollbar { display: none; }
+.mmm-vc-filter__row::-webkit-scrollbar { display: none; }
 
-.mmm-vc-filter__btn {
+.mmm-vc-filter__pill {
   flex-shrink: 0;
   background: none;
-  border: 1px solid rgba(var(--color-base-text), 0.2);
-  color: rgba(var(--color-base-text), 0.55);
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
+  border: none;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding: 8px 16px;
+  color: rgba(var(--color-base-text), 0.4);
+  padding: 6px 16px 6px 0;
   cursor: pointer;
-  white-space: nowrap;
-  /* Minimum tap target */
+  position: relative;
   min-height: 44px;
-  display: inline-flex;
-  align-items: center;
+  white-space: nowrap;
 }
-.mmm-vc-filter__btn.is-active,
-.mmm-vc-filter__btn:hover {
+.mmm-vc-filter__pill::after {
+  content: '';
+  display: block;
+  height: 1px;
   background: rgb(var(--color-base-text));
-  border-color: rgb(var(--color-base-text));
-  color: rgb(var(--color-base-background-1));
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 16px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.mmm-vc-filter__pill.is-active {
+  color: rgb(var(--color-base-text));
+}
+.mmm-vc-filter__pill.is-active::after,
+.mmm-vc-filter__pill:hover::after {
+  transform: scaleX(1);
 }
 
-/* ── Grid: SP = 2 columns by default ── */
+/* ── Catalog grid — architectural 1px lines ── */
 .mmm-vc-grid {
   display: grid;
-  grid-template-columns: repeat(var(--mmm-vc-cols-m, 2), 1fr);
-  gap: 1px;
+  grid-template-columns: repeat(var(--cols-m, 2), 1fr);
+  /* 1px borders via box-shadow trick to avoid doubling */
+  border-top: 1px solid rgba(var(--color-base-text), 0.12);
+  border-left: 1px solid rgba(var(--color-base-text), 0.12);
 }
 
 /* ── Card ── */
-.mmm-vc-card { position: relative; }
-.mmm-vc-card__link {
+.mmm-vc-card {
+  border-right: 1px solid rgba(var(--color-base-text), 0.12);
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.12);
+}
+.mmm-vc-card[hidden] { display: none; }
+
+.mmm-vc-card__a {
   display: block;
   text-decoration: none;
   color: inherit;
 }
 
-.mmm-vc-card__img-wrap {
+/* Image */
+.mmm-vc-card__fig {
   position: relative;
   aspect-ratio: 2 / 3;
   overflow: hidden;
-  background: rgba(var(--color-base-text), 0.04);
+  background: rgba(var(--color-base-text), 0.03);
 }
 .mmm-vc-card__img {
   position: absolute;
@@ -230,171 +252,181 @@
   object-fit: cover;
   display: block;
 }
-/* Hover image: hidden on SP (no hover state) */
-.mmm-vc-card__img--hover { display: none; }
+.mmm-vc-card__img--alt { display: none; } /* SP: no hover */
 
-.mmm-vc-card__no-img {
+.mmm-vc-card__noimg {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  color: rgba(var(--color-base-text), 0.3);
+  font-size: 1.5rem;
+  color: rgba(var(--color-base-text), 0.15);
 }
 
-.mmm-vc-card__badge {
+.mmm-vc-card__sold {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   font-size: 0.55rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 3px 8px;
   background: rgb(var(--color-base-background-1));
-  color: rgba(var(--color-base-text), 0.6);
+  color: rgba(var(--color-base-text), 0.5);
+  padding: 3px 8px;
 }
 
-.mmm-vc-card__meta {
-  padding: 10px 2px 20px;
+/* Hover veil — hidden on SP */
+.mmm-vc-card__veil { display: none; }
+
+/* Caption strip */
+.mmm-vc-card__cap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px 12px;
 }
-.mmm-vc-card__vendor {
+.mmm-vc-card__cap-vendor {
   font-size: 0.55rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(var(--color-base-text), 0.4);
-  margin: 0 0 4px;
+  color: rgba(var(--color-base-text), 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.mmm-vc-card__title {
-  font-size: 0.78rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
+.mmm-vc-card__cap-price {
+  font-size: 0.7rem;
   color: rgb(var(--color-base-text));
-  margin: 0 0 5px;
-}
-.mmm-vc-card__price {
-  font-size: 0.78rem;
-  color: rgb(var(--color-base-text));
-  margin: 0;
+  flex-shrink: 0;
 }
 
-.mmm-vc-card[hidden] { display: none; }
-
-/* ── Empty ── */
+/* Empty */
 .mmm-vc-empty {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 60px 0;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: rgba(var(--color-base-text), 0.4);
+  padding: 80px 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: rgba(var(--color-base-text), 0.35);
 }
 
-/* ── Pagination ── */
-.mmm-vc-pagination {
+/* Pagination */
+.mmm-vc-pager {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding-top: 44px;
+  gap: 32px;
+  padding: 48px 0 80px;
 }
-.mmm-vc-pagination__btn {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgb(var(--color-base-text));
-  text-decoration: none;
-  border-bottom: 1px solid rgba(var(--color-base-text), 0.3);
-  padding-bottom: 2px;
-  /* Tap target */
-  padding-top: 8px;
-}
-.mmm-vc-pagination__btn:hover { border-color: rgb(var(--color-base-text)); }
-.mmm-vc-pagination__info {
+.mmm-vc-pager__a {
   font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: rgba(var(--color-base-text), 0.4);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(var(--color-base-text), 0.6);
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(var(--color-base-text), 0.25);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
-
-/* ============================================================
-   TABLET (750px+)
-   ============================================================ */
-@media screen and (min-width: 750px) {
-  .mmm-vc-header { padding: 48px 0 36px; margin-bottom: 32px; }
-  .mmm-vc-header__title { font-size: 2rem; }
-  .mmm-vc-header__desc { max-width: 520px; }
-
-  .mmm-vc-filter { margin-bottom: 28px; }
-  .mmm-vc-filter__scroll {
-    flex-wrap: wrap;
-    overflow-x: unset;
-    justify-content: center;
-  }
+.mmm-vc-pager__a:hover { color: rgb(var(--color-base-text)); border-color: rgb(var(--color-base-text)); }
+.mmm-vc-pager__info {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: rgba(var(--color-base-text), 0.3);
 }
 
 /* ============================================================
    DESKTOP (990px+)
    ============================================================ */
 @media screen and (min-width: 990px) {
-  .mmm-vc-page { padding-bottom: 80px; }
 
-  .mmm-vc-header { padding: 56px 0 44px; }
-  .mmm-vc-header__title { font-size: clamp(1.8rem, 3vw, 2.8rem); }
+  .mmm-vc-masthead { padding: 72px 0 56px; }
+  .mmm-vc-masthead__inner { flex-direction: row; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+  .mmm-vc-masthead__eyebrow { margin-bottom: 0; order: -1; width: 100%; }
+  .mmm-vc-masthead__title { margin-bottom: 0; }
+  .mmm-vc-masthead__count { margin-bottom: 4px; text-align: right; }
+  .mmm-vc-masthead__desc { order: 10; width: 100%; margin-top: 20px; margin-bottom: 0; }
 
-  /* Desktop grid: use --mmm-vc-cols */
+  .mmm-vc-filter { padding: 14px 0; }
+  .mmm-vc-filter__row { flex-wrap: wrap; overflow-x: unset; }
+
   .mmm-vc-grid {
-    grid-template-columns: repeat(var(--mmm-vc-cols, 3), 1fr);
-    gap: 2px;
+    grid-template-columns: repeat(var(--cols, 3), 1fr);
   }
 
-  .mmm-vc-card__img--hover {
+  /* Hover veil */
+  .mmm-vc-card__img--alt {
     display: block;
-    position: absolute;
-    inset: 0;
     opacity: 0;
-    transition: opacity 0.35s ease;
+    transition: opacity 0.4s ease;
   }
-  .mmm-vc-card__img {
+  .mmm-vc-card__img--primary {
     transition: transform 0.5s ease;
   }
-  .mmm-vc-card:hover .mmm-vc-card__img:not(.mmm-vc-card__img--hover) {
-    transform: scale(1.03);
+  .mmm-vc-card:hover .mmm-vc-card__img--primary { transform: scale(1.04); }
+  .mmm-vc-card:hover .mmm-vc-card__img--alt { opacity: 1; }
+
+  .mmm-vc-card__veil {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.52);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+    padding: 24px;
   }
-  .mmm-vc-card:hover .mmm-vc-card__img--hover {
-    opacity: 1;
+  .mmm-vc-card:hover .mmm-vc-card__veil { opacity: 1; }
+
+  .mmm-vc-card__veil-brand {
+    font-size: 0.55rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+  .mmm-vc-card__veil-title {
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .mmm-vc-card__veil-price {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
   }
 
-  .mmm-vc-card__meta { padding: 12px 4px 24px; }
-  .mmm-vc-card__vendor { font-size: 0.58rem; }
-  .mmm-vc-card__title { font-size: 0.8rem; }
-  .mmm-vc-card__badge { top: 12px; left: 12px; }
+  .mmm-vc-card__cap { padding: 10px 14px 16px; }
 }
 
-/* ============================================================
-   Motion preference
-   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .mmm-vc-card__img,
-  .mmm-vc-card__img--hover { transition: none; }
+  .mmm-vc-card__img--primary,
+  .mmm-vc-card__img--alt,
+  .mmm-vc-card__veil,
+  .mmm-vc-filter__pill::after { transition: none; }
 }
 {% endstyle %}
 
 {% javascript %}
 (function () {
   'use strict';
-
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('[data-vc-filter]');
     if (!btn) return;
-
     var vendor = btn.dataset.vcFilter;
-
     document.querySelectorAll('[data-vc-filter]').forEach(function (b) {
       b.classList.toggle('is-active', b === btn);
     });
-
     document.querySelectorAll('.mmm-vc-card').forEach(function (card) {
       card.hidden = vendor !== '' && card.dataset.vendor !== vendor;
     });
@@ -409,33 +441,33 @@
     {
       "type": "text",
       "id": "eyebrow",
-      "label": "アイブロウテキスト（小さな上見出し）",
+      "label": "アイブロウ（小さな上見出し）",
       "default": "Archive"
     },
     {
       "type": "text",
       "id": "custom_title",
-      "label": "カスタムタイトル（空白でコレクション名を使用）"
+      "label": "カスタムタイトル（空でコレクション名）"
     },
     {
       "type": "checkbox",
       "id": "show_description",
-      "label": "コレクションの説明を表示",
+      "label": "説明文を表示",
       "default": true
     },
     {
       "type": "range",
       "id": "columns_desktop",
-      "label": "PC表示の列数",
+      "label": "PC列数",
       "min": 2,
-      "max": 4,
+      "max": 5,
       "step": 1,
       "default": 3
     },
     {
       "type": "select",
       "id": "columns_mobile",
-      "label": "モバイル表示の列数",
+      "label": "SP列数",
       "options": [
         { "value": "1", "label": "1列" },
         { "value": "2", "label": "2列" }
@@ -445,7 +477,7 @@
     {
       "type": "range",
       "id": "per_page",
-      "label": "1ページの表示件数",
+      "label": "1ページ件数",
       "min": 12,
       "max": 48,
       "step": 12,
@@ -460,7 +492,7 @@
     {
       "type": "text",
       "id": "filter_all_label",
-      "label": "「全件」ボタンのテキスト",
+      "label": "「全件」ラベル",
       "default": "All"
     },
     {
@@ -470,10 +502,6 @@
       "default": "No items found."
     }
   ],
-  "presets": [
-    {
-      "name": "Vintage Archive — コレクション"
-    }
-  ]
+  "presets": [{ "name": "Vintage Archive — コレクション" }]
 }
 {% endschema %}
