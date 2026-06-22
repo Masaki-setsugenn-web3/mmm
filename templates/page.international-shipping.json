@@ -1,0 +1,26 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "mmm-international-shipping",
+      "settings": {
+        "rate_asia": 2750,
+        "rate_row": 4300,
+        "delivery_asia": "4–7 business days 営業日",
+        "delivery_row": "7–14 business days 営業日",
+        "contact_email": "",
+        "padding_top": 64,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["main"]
+}

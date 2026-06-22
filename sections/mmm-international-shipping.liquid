@@ -1,0 +1,321 @@
+{%- liquid
+  assign rate_asia = section.settings.rate_asia
+  assign rate_row  = section.settings.rate_row
+  assign email     = section.settings.contact_email
+-%}
+
+{%- style -%}
+  .mmm-is {
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    color: rgb(var(--color-base-text));
+  }
+  .mmm-is__inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── ヒーロー ── */
+  .mmm-is__hero {
+    text-align: center;
+    padding-bottom: 56px;
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.1);
+    margin-bottom: 56px;
+  }
+  .mmm-is__eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin: 0 0 14px;
+  }
+  .mmm-is__title {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+  }
+  .mmm-is__title-jp {
+    font-size: 1rem;
+    opacity: 0.65;
+    margin: 0 0 22px;
+  }
+  .mmm-is__lead {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .mmm-is__lead-jp {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    opacity: 0.7;
+    max-width: 600px;
+    margin: 10px auto 0;
+  }
+
+  /* ── ブロック共通 ── */
+  .mmm-is__block { margin-bottom: 52px; }
+  .mmm-is__h {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  .mmm-is__h-jp {
+    font-size: 12px;
+    opacity: 0.55;
+    margin: 0 0 20px;
+  }
+  .mmm-is__p {
+    font-size: 0.9rem;
+    line-height: 1.85;
+    margin: 0 0 8px;
+  }
+  .mmm-is__p-jp {
+    font-size: 0.82rem;
+    line-height: 1.85;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  /* ── 地域チップ ── */
+  .mmm-is__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .mmm-is__chip {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 7px 16px;
+    border: 1px solid rgba(var(--color-base-text), 0.2);
+    border-radius: 999px;
+  }
+  .mmm-is__note {
+    font-size: 12px;
+    opacity: 0.55;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ── 送料・納期テーブル ── */
+  .mmm-is__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+  .mmm-is__table th,
+  .mmm-is__table td {
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.12);
+  }
+  .mmm-is__table th {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    font-weight: 600;
+  }
+  .mmm-is__table td:last-child,
+  .mmm-is__table th:last-child { text-align: right; white-space: nowrap; }
+  .mmm-is__rate { font-weight: 600; }
+  .mmm-is__region-jp { display: block; font-size: 0.78rem; opacity: 0.6; margin-top: 2px; }
+
+  /* ── 除外品（注意喚起） ── */
+  .mmm-is__alert {
+    background: rgba(var(--color-base-text), 0.04);
+    border-left: 3px solid rgba(var(--color-base-text), 0.4);
+    padding: 20px 22px;
+  }
+
+  /* ── FAQ ── */
+  .mmm-is__faq { border-top: 1px solid rgba(var(--color-base-text), 0.12); }
+  .mmm-is__faq details {
+    border-bottom: 1px solid rgba(var(--color-base-text), 0.12);
+  }
+  .mmm-is__faq summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 18px 28px 18px 0;
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .mmm-is__faq summary::-webkit-details-marker { display: none; }
+  .mmm-is__faq summary::after {
+    content: "+";
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    opacity: 0.5;
+  }
+  .mmm-is__faq details[open] summary::after { content: "–"; }
+  .mmm-is__faq-a {
+    padding: 0 0 20px;
+    font-size: 0.85rem;
+    line-height: 1.85;
+    opacity: 0.8;
+  }
+  .mmm-is__faq-a span { display: block; opacity: 0.7; margin-top: 6px; }
+
+  /* ── 問い合わせ ── */
+  .mmm-is__contact {
+    text-align: center;
+    padding-top: 16px;
+  }
+  .mmm-is__contact a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 749px) {
+    .mmm-is__title { font-size: 1.6rem; }
+    .mmm-is__inner { padding: 0 22px; }
+  }
+{%- endstyle -%}
+
+<div class="mmm-is">
+  <div class="mmm-is__inner">
+
+    {%- comment -%}── ヒーロー ──{%- endcomment -%}
+    <div class="mmm-is__hero">
+      <p class="mmm-is__eyebrow">International</p>
+      <h1 class="mmm-is__title">Worldwide Shipping</h1>
+      <p class="mmm-is__title-jp">海外発送について</p>
+      <p class="mmm-is__lead">Maison Ma Manière ships to over 115 countries. Below you'll find our delivery rates, estimated times, and customs information.</p>
+      <p class="mmm-is__lead-jp">Maison Ma Manière は世界115カ国以上へ発送しています。送料・お届け日数・関税については以下をご覧ください。</p>
+    </div>
+
+    {%- comment -%}── 配送対応地域 ──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <p class="mmm-is__h">Where we ship</p>
+      <p class="mmm-is__h-jp">配送対応地域</p>
+      <div class="mmm-is__chips">
+        <span class="mmm-is__chip">Asia</span>
+        <span class="mmm-is__chip">Oceania</span>
+        <span class="mmm-is__chip">Europe</span>
+        <span class="mmm-is__chip">North America</span>
+        <span class="mmm-is__chip">Middle East</span>
+      </div>
+      <p class="mmm-is__note">Orders ship from Japan via Yamato Transport (international). 日本からヤマト国際宅急便で発送します。</p>
+    </div>
+
+    {%- comment -%}── 送料 ──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <p class="mmm-is__h">Shipping rates</p>
+      <p class="mmm-is__h-jp">送料</p>
+      <table class="mmm-is__table">
+        <thead>
+          <tr><th>Region 地域</th><th>Rate 送料</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Asia<span class="mmm-is__region-jp">アジア（シンガポール・香港・台湾など）</span></td>
+            <td class="mmm-is__rate">{{ rate_asia | money }}</td>
+          </tr>
+          <tr>
+            <td>Rest of World<span class="mmm-is__region-jp">その他地域（欧州・北米・オセアニア・中東）</span></td>
+            <td class="mmm-is__rate">{{ rate_row | money }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="mmm-is__note">Prices shown in JPY; your local currency is displayed at checkout. 価格は日本円。決済時にお客様の通貨で表示されます。</p>
+    </div>
+
+    {%- comment -%}── お届け日数 ──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <p class="mmm-is__h">Delivery time</p>
+      <p class="mmm-is__h-jp">お届け日数（目安）</p>
+      <table class="mmm-is__table">
+        <tbody>
+          <tr><td>Asia アジア</td><td>{{ section.settings.delivery_asia }}</td></tr>
+          <tr><td>Rest of World その他地域</td><td>{{ section.settings.delivery_row }}</td></tr>
+        </tbody>
+      </table>
+      <p class="mmm-is__note">Estimates only; customs clearance may affect delivery. 通関状況により前後する場合があります。</p>
+    </div>
+
+    {%- comment -%}── 関税・輸入税 ──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <p class="mmm-is__h">Customs &amp; duties</p>
+      <p class="mmm-is__h-jp">関税・輸入税</p>
+      <p class="mmm-is__p">Import duties and taxes are not included in the price or shipping fee. They are the responsibility of the customer and are charged upon delivery according to the destination country's regulations.</p>
+      <p class="mmm-is__p-jp">関税・輸入税は商品代金・送料に含まれません。到着国の規定に基づき、お客様のご負担（着払い）となります。</p>
+    </div>
+
+    {%- comment -%}── 海外発送できない商品（fabric mist 等）──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <div class="mmm-is__alert">
+        <p class="mmm-is__h">Items we cannot ship abroad</p>
+        <p class="mmm-is__h-jp">海外発送できない商品</p>
+        <p class="mmm-is__p">Due to aviation safety regulations, fragrances, alcohol-based mists, sprays and other flammable liquids (e.g. FABRIC MIST) cannot be shipped internationally and are available within Japan only.</p>
+        <p class="mmm-is__p-jp">航空法の規制により、フレグランス・アルコール系ミスト・スプレー等の引火性液体（例：FABRIC MIST）は海外発送できません。日本国内限定の販売となります。</p>
+      </div>
+    </div>
+
+    {%- comment -%}── FAQ ──{%- endcomment -%}
+    <div class="mmm-is__block">
+      <p class="mmm-is__h">FAQ</p>
+      <p class="mmm-is__h-jp">よくあるご質問</p>
+      <div class="mmm-is__faq">
+        <details>
+          <summary>How long does delivery take? / お届けまでどのくらい？</summary>
+          <div class="mmm-is__faq-a">Asia: {{ section.settings.delivery_asia }}. Rest of World: {{ section.settings.delivery_row }} (estimates).<span>アジアは{{ section.settings.delivery_asia }}、その他地域は{{ section.settings.delivery_row }}が目安です。</span></div>
+        </details>
+        <details>
+          <summary>Can I track my order? / 追跡できますか？</summary>
+          <div class="mmm-is__faq-a">Yes. A tracking number is provided once your order ships.<span>はい。発送時に追跡番号をお知らせします。</span></div>
+        </details>
+        <details>
+          <summary>Who pays customs duties? / 関税は誰が負担しますか？</summary>
+          <div class="mmm-is__faq-a">Customs duties and import taxes are paid by the customer upon delivery.<span>関税・輸入税はお届け時にお客様のご負担となります。</span></div>
+        </details>
+        <details>
+          <summary>Why can't I order FABRIC MIST? / FABRIC MIST が注文できないのはなぜ？</summary>
+          <div class="mmm-is__faq-a">Alcohol-based and flammable items cannot be shipped by air and are sold within Japan only.<span>アルコール・引火性の商品は航空便で送れないため、日本国内限定の販売です。</span></div>
+        </details>
+      </div>
+    </div>
+
+    {%- comment -%}── お問い合わせ ──{%- endcomment -%}
+    {%- if email != blank -%}
+      <div class="mmm-is__contact">
+        <p class="mmm-is__p">Questions about international orders? Email us at <a href="mailto:{{ email }}">{{ email }}</a>.</p>
+        <p class="mmm-is__p-jp">海外発送に関するお問い合わせは <a href="mailto:{{ email }}">{{ email }}</a> まで。</p>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "International Shipping",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "送料（決済時に自動で各国通貨へ換算されます）" },
+    { "type": "number", "id": "rate_asia", "label": "アジア向け送料 (JPY)", "default": 2750 },
+    { "type": "number", "id": "rate_row",  "label": "その他地域向け送料 (JPY)", "default": 4300 },
+    { "type": "header", "content": "お届け日数" },
+    { "type": "text", "id": "delivery_asia", "label": "アジア お届け日数", "default": "4–7 business days 営業日" },
+    { "type": "text", "id": "delivery_row",  "label": "その他地域 お届け日数", "default": "7–14 business days 営業日" },
+    { "type": "header", "content": "お問い合わせ" },
+    { "type": "text", "id": "contact_email", "label": "問い合わせメール（空欄で非表示）" },
+    { "type": "header", "content": "余白設定" },
+    { "type": "range", "id": "padding_top",    "min": 0, "max": 120, "step": 4, "default": 64, "label": "上部余白" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "default": 80, "label": "下部余白" }
+  ],
+  "presets": [{ "name": "International Shipping" }]
+}
+{% endschema %}
