@@ -221,11 +221,11 @@
         <tbody>
           <tr>
             <td>Asia<span class="mmm-is__region-jp">アジア（シンガポール・香港・台湾など）</span></td>
-            <td class="mmm-is__rate">{{ rate_asia | money }}</td>
+            <td class="mmm-is__rate">{{ rate_asia | times: 100 | money }}</td>
           </tr>
           <tr>
             <td>Rest of World<span class="mmm-is__region-jp">その他地域（欧州・北米・オセアニア・中東）</span></td>
-            <td class="mmm-is__rate">{{ rate_row | money }}</td>
+            <td class="mmm-is__rate">{{ rate_row | times: 100 | money }}</td>
           </tr>
         </tbody>
       </table>
